@@ -4,7 +4,7 @@
     "isModifiable": true,
     "label": "week of: ",
     "defaultValue": {
-      "function": "startOfPreviousWeek(Date.now())"
+      "function": "startOfPreviousWeek()"
     },
     "minValue": {
       "string": "2010-01-01 00:00"
@@ -13,7 +13,7 @@
   "untilDate":{
     "isModifiable": false,
     "defaultValue": {
-      "function": "endOfWeek(fromDate)"
+      "function": "endOfPreviousWeek()"
     }
   },
   "series":{

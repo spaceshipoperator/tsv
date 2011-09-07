@@ -6,7 +6,9 @@ var express = require('express'),
   fs = require('fs'), 
   lazy = require('lazy'),
   spawn = require('child_process').spawn,
-  app = module.exports = express.createServer();
+  app = module.exports = express.createServer(),
+  // one day in milliseconds...used within a few helper functions
+  od = 1000*60*60*24; 
 
 // Configuration
 
@@ -37,14 +39,60 @@ Array.min = function( array ){
 };
 
 var isConfig = function(x) {
-  var re = /.*\.config/;
+  var re = /.*\.json/;
   return String(x).match(re);
 };
 
-function getSeriesData (name, next) {
+var fs = require('fs'), 
+  od = 1000*60*60*24; 
 
-  //getSeriesConfig 
+var startOfWeek = function(d) {
+  var t = d || new Date();  
+  var td = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  return new Date(td.getTime() - (td.getDay() * od));
+};
+
+var startOfPreviousWeek = function(d) {
+  return new Date(startOfWeek(d).getTime() - (7 * od));
+};
+
+var endOfWeek = function(d) {
+  return new Date(startOfWeek(d).getTime() + (7 * od));
+};
+
+var endOfPreviousWeek = function(d) {
+  return new Date(startOfPreviousWeek(d).getTime() + (7 * od));
+};
+
+function getSeriesConfig(name, next) {
   //read the config to get the "query" and other stuff
+  fs.readFile("./tsv/" + name + ".json", function(err,buffer) {
+    // prolly do a little error checking...meh
+    var c = JSON.parse(buffer);
+
+    var a = ['fromDate','untilDate'];
+
+    for (var i in a) {
+      var k = a[i]; 
+      if (c[k].defaultValue.string) {
+        c[k].value = parseDateString(c[k].defaultValue.string);
+      } else if (c[k].defaultValue.function) {
+        c[k].value = eval(c[k].defaultValue.function);
+      }
+    }
+
+    console.log(JSON.stringify(c,null,4));
+  });
+}
+
+getSeriesConfig("UCC_Timeframe_Census_By_Week", function(r) {
+  console.log("foo!");
+});
+
+
+function getSeriesData (name, next) {
+  
+  //getSeriesConfig 
 
   var csv = spawn('cat', ["./tsv\/" + name + ".csv"]);
 
