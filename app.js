@@ -42,6 +42,8 @@ var isConfig = function(x) {
 };
 
 function getSeriesData (name, next) {
+
+  //getSeriesConfig 
   //read the config to get the "query" and other stuff
 
   var csv = spawn('cat', ["./tsv\/" + name + ".csv"]);
@@ -194,6 +196,7 @@ app.get('/vis/:vname', function(req, res){
   var vname = req.params.vname, 
     dname = vname.split('_').join(' ');
 
+  
 
   // http://howtonode.org/control-flow
   buildSeries(vname, function(series) {
