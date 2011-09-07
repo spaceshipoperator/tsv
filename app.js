@@ -64,31 +64,46 @@ var endOfPreviousWeek = function(d) {
   return new Date(startOfPreviousWeek(d).getTime() + (7 * od));
 };
 
-function getSeriesConfig(name, next) {
-  //read the config to get the "query" and other stuff
-  fs.readFile("./tsv/" + name + ".json", function(err,buffer) {
-    // prolly do a little error checking...meh
-    var c = JSON.parse(buffer);
+var parseDateString = function(s) {
+  var a, d, t, r;
 
-    var a = ['fromDate','untilDate'];
+  a = s.split(' '); 
+  d = a[0].split('-').map(Number);
+  console.log(d);
+  if (a[1]) {
+    t = a[1].split(':').map(Number);
+    console.log(t);
+    r = new Date(d[0], d[1] -1, d[2], t[0], t[1]);      
+  } else {
+    r = new Date(d[0], d[1] -1, d[2]);      
+  }
 
-    for (var i in a) {
-      var k = a[i]; 
-      if (c[k].defaultValue.string) {
-        c[k].value = parseDateString(c[k].defaultValue.string);
-      } else if (c[k].defaultValue.function) {
-        c[k].value = eval(c[k].defaultValue.function);
+  return r;
+};
+
+function getSeriesConfig(name, config, next) {
+  var results = [];
+
+  if (!(config)) {
+    fs.readFile("./tsv/" + name + ".json", function(err,buffer) {
+      var c = JSON.parse(buffer);
+      
+      var a = ['fromDate','untilDate'];
+      for (var i in a) {
+        var k = a[i]; 
+        if (c[k].defaultValue.string) {
+          c[k].value = parseDateString(c[k].defaultValue.string);
+        } else if (c[k].defaultValue.function) {
+          c[k].value = eval(c[k].defaultValue.function);
+        }
       }
-    }
-
-    console.log(JSON.stringify(c,null,4));
-  });
+      results.push(c);
+      next(c);
+    });
+  } else {
+    next(config);
+  }
 }
-
-getSeriesConfig("UCC_Timeframe_Census_By_Week", function(r) {
-  console.log("foo!");
-});
-
 
 function getSeriesData (name, next) {
   
@@ -156,8 +171,7 @@ function buildSeries (name, next) {
       t[o]['dataMin'] = dataMin;
     }
 
-    //// function prepareSeries
-    // getDateLabels
+    //// factor the following into function prepareSeries
     // finally get the x and y bounds over all series
     var seriesMax = {},
       seriesMin = {},

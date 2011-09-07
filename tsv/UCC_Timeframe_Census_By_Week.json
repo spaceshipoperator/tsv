@@ -20,14 +20,18 @@
     "label": "departments: ",
     "keys": "30148,30348,30401,70248,70348,70448,70548,70648"
   },
-  "yLeftOptions":[
-    "wait time for clinical access",
-    "wait time for vitals taken" 
-  ],
-  "yRightOptions":[
-    "number of patients waiting for clinical access",
-    "number of patients waiting for vitals to be taken",
-    "number of patients seen"
-  ],
+  "yLeft": { 
+    "options":[
+      "wait time for clinical access",
+      "wait time for vitals taken" ],
+    "selected":[0]
+  },
+  "yRight": { 
+    "options":[
+      "number of patients waiting for clinical access",
+      "number of patients waiting for vitals to be taken",
+      "number of patients seen" ],
+    "selected":[0,2]
+  },
   "cmd": "exec edw.UCC.TimeFrameCensusTS ~fromDate, ~untilDate, ~seriesKeys;"
 }
