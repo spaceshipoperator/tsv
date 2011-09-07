@@ -1,0 +1,12 @@
+h1= title
+// http://stackoverflow.com/questions/6270832/jade-express-iterating-over-object-in-inline-js-code-client-side
+p
+script(src='/javascripts/tsv.js')
+- if (typeof(series) != null)
+  != "<script type='text/javascript'>"
+  != "function initData() { "
+  != "  var s = " + JSON.stringify(series) + "; "
+  != "  plotSeries(s); "
+  != "}"
+  != "</script>"
+body(onload="initData()")

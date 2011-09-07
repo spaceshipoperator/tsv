@@ -1,0 +1,32 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.vrule line {
+  stroke: #eee;
+  shape-rendering: crispEdges;
+}
+
+.vrule line.axis {
+  stroke: #000;
+}
+
+.hrule line {
+  stroke: #eee;
+  shape-rendering: crispEdges;
+}
+
+.hrule line.axis {
+  stroke: #000;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
