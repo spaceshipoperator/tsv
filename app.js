@@ -81,6 +81,20 @@ var parseDateString = function(s) {
   return r;
 };
 
+var dateToStr = function (d) {
+  var y = d.getFullYear().toString(),
+    m = '0' + d.getMonth().toString(),
+    s = '0' + d.getDate().toString();
+    return y + m.substring(m.length - 2) + s.substring(s.length - 2);
+};
+
+var getConfigCmd = function(c) {
+  c.cmd = c.cmd.replace('~fromDate', "'" + dateToStr(c.fromDate.value) + "'");
+  c.cmd = c.cmd.replace('~untilDate', "'" + dateToStr(c.untilDate.value) + "'");
+  c.cmd = c.cmd.replace('~seriesKeys', "'" + c.series.keys + "'");
+  return(c.cmd);
+};
+
 function getSeriesConfig(name, config, next) {
   var results = [];
 
@@ -98,33 +112,32 @@ function getSeriesConfig(name, config, next) {
         }
       }
       results.push(c);
-      next(c);
+      next(results);
     });
   } else {
-    next(config);
+    results.push(config);
+    next(results);
   }
 }
 
-function getSeriesData (name, next) {
-  
-  //getSeriesConfig 
+function getSeriesData (name, config, next) {
+  getSeriesConfig(name, config, function(data) {
+    var c = data.shift(),
+      csv = spawn('./tsv/mssql.sh', [getConfigCmd(c)]);
 
-  var csv = spawn('cat', ["./tsv\/" + name + ".csv"]);
-
-  new lazy(csv.stdout)
-    .lines
-    .map(String)
-    .map(function (line){
+    new lazy(csv.stdout).lines.map(String).map(function (line){
       return line.split(',');
-    })
-    .join(function (results) {
+    }).join(function (results) {
+      results.unshift(c);
       next(results);
     });
+  });
 };
 
-function buildSeries (name, next) {
-  getSeriesData(name, function(data) {
-    var header = data[0],
+function buildSeries (name, config, next) {
+  getSeriesData(name, config, function(data) {
+    var q = data.shift(), // q for qonfig...hell, running out of letters for my alphabet soup
+      header = data[0],
       t = [], // temporary array will have named indexes 
       results = []; // will be sent to next, must be JSON stringifiable
 
@@ -171,7 +184,6 @@ function buildSeries (name, next) {
       t[o]['dataMin'] = dataMin;
     }
 
-    //// factor the following into function prepareSeries
     // finally get the x and y bounds over all series
     var seriesMax = {},
       seriesMin = {},
@@ -232,6 +244,7 @@ function buildSeries (name, next) {
         results.push(t[f]);
     }
 
+    results.unshift(q);
     next(results);
   });
 };
@@ -256,15 +269,16 @@ app.get('/', function(req, res){
 
 app.get('/vis/:vname', function(req, res){
   var vname = req.params.vname, 
-    dname = vname.split('_').join(' ');
-
-  
+    dname = vname.split('_').join(' '),
+    config; 
 
   // http://howtonode.org/control-flow
-  buildSeries(vname, function(series) {
-
+  buildSeries(vname, config, function(series) {
+    var c = series.shift();
+    console.log(c);
     res.render('vis', {
       title: dname,
+      config: c,
       series: series
     });
   });
