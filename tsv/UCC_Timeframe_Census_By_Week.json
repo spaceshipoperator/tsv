@@ -4,16 +4,28 @@
     "isModifiable": true,
     "label": "week of: ",
     "defaultValue": {
-      "function": "startOfPreviousWeek()"
-    },
-    "minValue": {
-      "string": "2010-01-01 00:00"
+      "function": "startOfPreviousWeek(startOfPreviousWeek())"
     }
+  },
+  "fromTime":{
+    "isModifiable": false,
+    "defaultValue": {
+      "string": "06:40"
+    }
+  },
+  "minValue": {
+    "string": "2010-01-01 00:00"
   },
   "untilDate":{
     "isModifiable": false,
     "defaultValue": {
-      "function": "endOfPreviousWeek()"
+      "function": "endOfPreviousWeek(startOfPreviousWeek())"
+    }
+  },
+  "untilTime":{
+    "isModifiable": false,
+    "defaultValue": {
+      "string": "06:40"
     }
   },
   "series":{

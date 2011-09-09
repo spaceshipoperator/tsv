@@ -107,18 +107,16 @@ var dateToLabel = function(v) {
 };
 
 var getXlabs = function(f,u) {
-  var t = (u.getTime() - f.getTime())/6,
-    s = 2,
+  var t = (u.getTime() - f.getTime())/7,
     v = 0,
     r = [];
 
   r.push(dateToLabel(f));
 
-  for (var i = 0; i < 6; i++) {
+  for (var i = 0; i < 5; i++) {
     v = v + t;
     var d = new Date(f.getTime() + v);
     r.push(dateToLabel(d));
-    s = s + 3;
   }
 
   r.push("y" + u.getFullYear().toString());
@@ -134,23 +132,32 @@ var getConfigCmd = function(c) {
 };
 
 function getSeriesConfig(name, config, next) {
-  var results = [];
+  var ft = [],
+    ut = [],
+    results = [];
 
   if (!(config)) {
     fs.readFile("./tsv/" + name + ".json", function(err,buffer) {
-      var c = JSON.parse(buffer);
-      
-      var a = ['fromDate','untilDate'];
-      for (var i in a) {
-        var k = a[i]; 
-        if (c[k].defaultValue.string) {
-          c[k].value = parseDateString(c[k].defaultValue.string);
-        } else if (c[k].defaultValue.function) {
-          c[k].value = eval(c[k].defaultValue.function);
-        }
-      }
+      var c = JSON.parse(buffer),
+        b = ['from','until'];
 
-      c['xLabs'] = getXlabs(c.fromDate.value, c.untilDate.value);
+      for (var i in b) {
+        var k = b[i],
+          d = 'Date',
+          t = 'Time',
+          s = []; 
+
+        if (c[k+d].defaultValue.string) {
+          c[k+d].value = parseDateString(c[k+d].defaultValue.string);
+        } else if (c[k+d].defaultValue.function) {
+          c[k+d].value = eval(c[k+d].defaultValue.function);
+        }
+
+        s = c[k+t].defaultValue.string.split(':').map(Number);
+        c[k+d].value.setHours(s[0]);
+        c[k+d].value.setMinutes(s[1]);
+
+      }
 
       results.push(c);
       next(results);
@@ -181,6 +188,9 @@ function buildSeries (name, config, next) {
       header = data[0],
       t = [], // temporary array will have named indexes 
       results = []; // will be sent to next, must be JSON stringifiable
+
+    // todo: need to drive this by the data rather than the config
+    q['xLabs'] = getXlabs(q.fromDate.value, q.untilDate.value);
 
     for(var i = 1; i < data.length ; i++) {
       var c = data[i];
