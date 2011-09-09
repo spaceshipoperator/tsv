@@ -132,31 +132,21 @@ var getConfigCmd = function(c) {
 };
 
 function getSeriesConfig(name, config, next) {
-  var ft = [],
-    ut = [],
-    results = [];
+  var results = [];
 
   if (!(config)) {
     fs.readFile("./tsv/" + name + ".json", function(err,buffer) {
       var c = JSON.parse(buffer),
-        b = ['from','until'];
+        b = ['fromDate','untilDate'];
 
       for (var i in b) {
-        var k = b[i],
-          d = 'Date',
-          t = 'Time',
-          s = []; 
+        var k = b[i]; 
 
-        if (c[k+d].defaultValue.string) {
-          c[k+d].value = parseDateString(c[k+d].defaultValue.string);
-        } else if (c[k+d].defaultValue.function) {
-          c[k+d].value = eval(c[k+d].defaultValue.function);
+        if (c[k].defaultValue.string) {
+          c[k].value = parseDateString(c[k].defaultValue.string);
+        } else if (c[k].defaultValue.function) {
+          c[k].value = eval(c[k].defaultValue.function);
         }
-
-        s = c[k+t].defaultValue.string.split(':').map(Number);
-        c[k+d].value.setHours(s[0]);
-        c[k+d].value.setMinutes(s[1]);
-
       }
 
       results.push(c);

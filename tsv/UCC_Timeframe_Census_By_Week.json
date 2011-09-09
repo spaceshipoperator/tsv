@@ -1,32 +1,14 @@
 {
-  "name": "UCC Timeframe Census (by week)",
+  "name": "UCC Timeframe Census",
   "fromDate":{
     "isModifiable": true,
-    "label": "week of: ",
-    "defaultValue": {
-      "function": "startOfPreviousWeek(startOfPreviousWeek())"
-    }
-  },
-  "fromTime":{
-    "isModifiable": false,
-    "defaultValue": {
-      "string": "06:40"
-    }
-  },
-  "minValue": {
-    "string": "2010-01-01 00:00"
+    "defaultValue": { "function": "startOfPreviousWeek(startOfPreviousWeek())" },
+    "minValue": { "string": "2010-01-01" }
   },
   "untilDate":{
     "isModifiable": false,
-    "defaultValue": {
-      "function": "endOfPreviousWeek(startOfPreviousWeek())"
-    }
-  },
-  "untilTime":{
-    "isModifiable": false,
-    "defaultValue": {
-      "string": "06:40"
-    }
+    "defaultValue": { "function": "endOfPreviousWeek(startOfPreviousWeek())" },
+    "maxValue": { "function": "endOfPreviousWeek()" }
   },
   "series":{
     "label": "departments: ",
@@ -36,14 +18,14 @@
     "options":[
       "wait time for clinical access",
       "wait time for vitals taken" ],
-    "selected":[0]
+    "selected":[1,2]
   },
   "yRight": { 
     "options":[
       "number of patients waiting for clinical access",
       "number of patients waiting for vitals to be taken",
       "number of patients seen" ],
-    "selected":[0,2]
+    "selected":[1,3]
   },
   "cmd": "exec edw.UCC.TimeFrameCensusTS ~fromDate, ~untilDate, ~seriesKeys;"
 }
