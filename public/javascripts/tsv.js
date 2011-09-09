@@ -1,33 +1,32 @@
 function plotSeries(s) {
-  var b = s.pop();
+  var c = s.shift(), 
+    b = s.pop();
 
   for (var o in s) {
-    plotData(s[o],b);
+    plotData(s[o],b,c);
   }
 }
 
 //data,xMax,xMin,yLeftMax,yLeftMin
-function plotData(o,b) {
-
-  var xlabs = [];
-  
-  xlabs[0] = '7/18';
-  xlabs[4] = '7/19';
-  xlabs[9] = '7/20';
-  xlabs[14] = '7/21';
-  xlabs[19] = '7/22';
-
-  var w = 600,
+function plotData(o,b,c) {
+  var w = 800,
     h = 275,
     p = 30,
     t = o['seriesName'],
+/*
+    xm = b['seriesMod'],
+*/
     xb = b['seriesMin']['x'],
     xt = b['seriesMax']['x'],
     yb = b['seriesMin']['yLeft'],
     yt = b['seriesMax']['yLeft'],
+    l = c['xLabs'],
     x = d3.scale.linear().domain([xb, xt]).range([0, w]),
     y = d3.scale.linear().domain([yb, yt]).range([h, 0]),
+    xl = d3.scale.ordinal().domain(l).rangePoints([0, w]),
     data = o.data;
+
+//alert(c['xLabs']);
 
   d3.select("body")
     .append("hr")
@@ -38,7 +37,7 @@ function plotData(o,b) {
   var vis = d3.select("body")
     .data([data])
     .append("svg:svg")
-    .attr("width", w + p * 2)
+    .attr("width", w + p * 4)
     .attr("height", h + p * 2)
     .append("svg:g")
     .attr("transform", "translate(" + p + "," + p + ")");
@@ -61,22 +60,24 @@ function plotData(o,b) {
 
   //vertical rules
   var vrules = vis.selectAll("g.vrule")
-    .data(x.ticks(20))
+//    .data(x.ticks(20))
+    .data(l)
     .enter().append("svg:g")
     .attr("class", "vrule");
 
   vrules.append("svg:line")
-    .attr("x1", x)
-    .attr("x2", x)
+    .attr("x1", xl)
+    .attr("x2", xl)
     .attr("y1", 0)
     .attr("y2", h - 1);
 
   vrules.append("svg:text")
-    .attr("x", x)
+    .attr("x", xl)
     .attr("y", h + 3)
     .attr("dy", ".71em")
-    .attr("text-anchor", "middle")
-    .text(function(d,i) { return xlabs[i] ? xlabs[i] : ""; });
+    .attr("text-anchor", "start")
+    .text(function(d,i) { return d;});
+//    .text(x.tickFormat(10));
 
   //horizontal lines
   var hrules = vis.selectAll("g.hrule")

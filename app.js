@@ -38,13 +38,15 @@ Array.min = function( array ){
     return Math.min.apply( Math, array );
 };
 
+var checkRange = function(x, n, m) {
+    if (x >= n && x <= m) { return x; }
+    else { return !x; }
+};
+
 var isConfig = function(x) {
   var re = /.*\.json/;
   return String(x).match(re);
 };
-
-var fs = require('fs'), 
-  od = 1000*60*60*24; 
 
 var startOfWeek = function(d) {
   var t = d || new Date();  
@@ -83,9 +85,45 @@ var parseDateString = function(s) {
 
 var dateToStr = function (d) {
   var y = d.getFullYear().toString(),
-    m = '0' + d.getMonth().toString(),
+    m = '0' + (d.getMonth() +1).toString(),
     s = '0' + d.getDate().toString();
     return y + m.substring(m.length - 2) + s.substring(s.length - 2);
+};
+
+var dateToLabel = function(v) {
+  var m = (v.getMonth() +1).toString(),
+    d = '0' + v.getDate().toString(),
+    h = v.getHours(),
+    f = '0' + (Math.round(v.getMinutes()/10)*10).toString(),
+    r = "";
+
+  r = m.substring(m.length - 2) + "/";
+  r = r + d.substring(d.length - 2) + '@';
+  r = r + (h == 0 ? '12' : h.toString()) + ":";
+  r = r + f.substring(f.length -2) ;
+  r = r + (h >= 12 ? 'p' : 'a');
+
+  return r; 
+};
+
+var getXlabs = function(f,u) {
+  var t = (u.getTime() - f.getTime())/6,
+    s = 2,
+    v = 0,
+    r = [];
+
+  r.push(dateToLabel(f));
+
+  for (var i = 0; i < 6; i++) {
+    v = v + t;
+    var d = new Date(f.getTime() + v);
+    r.push(dateToLabel(d));
+    s = s + 3;
+  }
+
+  r.push("y" + u.getFullYear().toString());
+
+  return r;
 };
 
 var getConfigCmd = function(c) {
@@ -111,6 +149,9 @@ function getSeriesConfig(name, config, next) {
           c[k].value = eval(c[k].defaultValue.function);
         }
       }
+
+      c['xLabs'] = getXlabs(c.fromDate.value, c.untilDate.value);
+
       results.push(c);
       next(results);
     });
@@ -180,6 +221,9 @@ function buildSeries (name, config, next) {
         dataMin[k] = minp;
       }
 
+/*
+      t[o]['dataCount'] = t[o]['data'].length;
+*/
       t[o]['dataMax'] = dataMax;
       t[o]['dataMin'] = dataMin;
     }
@@ -187,15 +231,23 @@ function buildSeries (name, config, next) {
     // finally get the x and y bounds over all series
     var seriesMax = {},
       seriesMin = {},
+/*
+      xc = [],
+*/
       xt = [],
       xb = [],
       ylt = [],
       ylb = [],
       yrt = [],
       yrb = [],
+      sc = 0,
       sb = {};
   
     for (d in t) {
+/*
+      xc.push(t[d]['dataCount']);
+*/
+
       xt.push(t[d]['dataMax']['x']);
       xb.push(t[d]['dataMin']['x']);
   
@@ -224,7 +276,31 @@ function buildSeries (name, config, next) {
 
     yrt.push(0);
     yrb.push(0);
-  
+
+/*  
+    sc = Array.max(xc);
+    switch (sc) {
+    case checkRange(sc, 0, 90):
+        sb['seriesMod'] = 15;
+        break;
+    case checkRange(sc, 91, 180):
+        sb['seriesMod'] = 30;
+        break;
+    case checkRange(sc, 181, 360):
+        sb['seriesMod'] = 60;
+        break;
+    case checkRange(sc, 361, 540):
+        sb['seriesMod'] = 90;
+        break;
+    case checkRange(sc, 541, 720):
+        sb['seriesMod'] = 120;
+        break;
+    default:
+        sb['seriesMod'] = 150;
+        break;
+    }
+*/
+
     seriesMax['x'] = Array.max(xt);
     seriesMin['x'] = Array.min(xb);
   
@@ -270,15 +346,20 @@ app.get('/', function(req, res){
 app.get('/vis/:vname', function(req, res){
   var vname = req.params.vname, 
     dname = vname.split('_').join(' '),
-    config; 
-
+    config;
   // http://howtonode.org/control-flow
   buildSeries(vname, config, function(series) {
-    var c = series.shift();
-    console.log(c);
+
+//var p = series.pop();
+//console.log("foo");
+//console.log(p);
+//console.log("bar");
+//console.log(series[0]);
+//console.log("baz");
+//console.log(series[1]['data'].slice(0,5));
+
     res.render('vis', {
       title: dname,
-      config: c,
       series: series
     });
   });
