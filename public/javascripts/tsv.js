@@ -13,9 +13,6 @@ function plotData(o,b,c) {
     h = 275,
     p = 30,
     t = o['seriesName'],
-/*
-    xm = b['seriesMod'],
-*/
     xb = b['seriesMin']['x'],
     xt = b['seriesMax']['x'],
     yb = b['seriesMin']['yLeft'],
@@ -25,8 +22,6 @@ function plotData(o,b,c) {
     y = d3.scale.linear().domain([yb, yt]).range([h, 0]),
     xl = d3.scale.ordinal().domain(l).rangePoints([0, w]),
     data = o.data;
-
-//alert(c['xLabs']);
 
   d3.select("body")
     .append("hr")
@@ -60,7 +55,6 @@ function plotData(o,b,c) {
 
   //vertical rules
   var vrules = vis.selectAll("g.vrule")
-//    .data(x.ticks(20))
     .data(l)
     .enter().append("svg:g")
     .attr("class", "vrule");
@@ -77,7 +71,6 @@ function plotData(o,b,c) {
     .attr("dy", ".71em")
     .attr("text-anchor", "start")
     .text(function(d,i) { return d;});
-//    .text(x.tickFormat(10));
 
   //horizontal lines
   var hrules = vis.selectAll("g.hrule")
