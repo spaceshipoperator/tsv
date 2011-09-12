@@ -2,17 +2,24 @@
   "name": "UCC Timeframe Census",
   "fromDate":{
     "isModifiable": true,
-    "defaultValue": { "function": "startOfPreviousWeek(startOfPreviousWeek())" },
+    "defaultValue": { "string": "2011-08-23" },
     "minValue": { "string": "2010-01-01" }
   },
   "untilDate":{
     "isModifiable": false,
-    "defaultValue": { "function": "endOfPreviousWeek(startOfPreviousWeek())" },
+    "defaultValue": { "string": "2011-08-24" },
     "maxValue": { "function": "endOfPreviousWeek()" }
   },
   "series":{
     "label": "departments: ",
-    "keys": "30148,30348,30401,70248,70348,70448,70548,70648"
+    "options": [
+      [ 30148, "Covington UCC" ],
+      [ 30348, "Kent UCC" ],
+      [ 70248, "Spanaway UCC" ],
+      [ 70548, "Lakewood UCC" ],
+      [ 70648, "Gig Harbor UCC" ]
+    ],
+    "selected": ["30148","30348","70248","70548","70648"]
   },
   "yLeft": { 
     "options":[

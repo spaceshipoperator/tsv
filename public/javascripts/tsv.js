@@ -1,6 +1,5 @@
-function plotSeries(s) {
-  var c = s.shift(), 
-    b = s.pop();
+function plotSeries(s,c) {
+  var b = s.pop();
 
   for (var o in s) {
     plotData(s[o],b,c);

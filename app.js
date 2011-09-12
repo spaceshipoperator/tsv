@@ -131,36 +131,41 @@ var getConfigCmd = function(c) {
   return(c.cmd);
 };
 
-function getSeriesConfig(name, config, next) {
+function getSeriesConfig(vname, selectedOptions, next) {
   var results = [];
 
-  if (!(config)) {
-    fs.readFile("./tsv/" + name + ".json", function(err,buffer) {
-      var c = JSON.parse(buffer),
-        b = ['fromDate','untilDate'];
+  fs.readFile("./tsv/" + vname + ".json", function(err,buffer) {
+    var c = JSON.parse(buffer),
+      b = ['fromDate','untilDate'];
 
-      for (var i in b) {
-        var k = b[i]; 
+    for (var i in b) {
+      var k = b[i]; 
 
-        if (c[k].defaultValue.string) {
-          c[k].value = parseDateString(c[k].defaultValue.string);
-        } else if (c[k].defaultValue.function) {
-          c[k].value = eval(c[k].defaultValue.function);
-        }
+      if (c[k].defaultValue.string) {
+        c[k].value = parseDateString(c[k].defaultValue.string);
+      } else if (c[k].defaultValue.function) {
+        c[k].value = eval(c[k].defaultValue.function);
       }
+    }
 
-      results.push(c);
-      next(results);
-    });
-  } else {
-    results.push(config);
+    if (selectedOptions) {
+      c['fromDate'].value = parseDateString(selectedOptions.fromDate);
+      c['untilDate'].value = parseDateString(selectedOptions.untilDate);
+      c['series']['selected'].value = selectedOptions.seriesKeys;
+    }
+
+    results.push(c);
     next(results);
-  }
+  });
+
 }
 
-function getSeriesData (name, config, next) {
-  getSeriesConfig(name, config, function(data) {
+function getSeriesData (vname, selectedOptions, next) {
+  getSeriesConfig(vname, selectedOptions, function(data) {
     var c = data.shift(),
+      // todo: get rid of this ugliness calling a shell script here...
+      // if we tuck it away in the config for now at least that gives us options 
+      // for calling different stuff...still ugly I know
       csv = spawn('./tsv/mssql.sh', [getConfigCmd(c)]);
 
     new lazy(csv.stdout).lines.map(String).map(function (line){
@@ -172,8 +177,8 @@ function getSeriesData (name, config, next) {
   });
 };
 
-function buildSeries (name, config, next) {
-  getSeriesData(name, config, function(data) {
+function buildSeries (vname, selectedOptions, next) {
+  getSeriesData(vname, selectedOptions, function(data) {
     var q = data.shift(), // q for qonfig...hell, running out of letters for my alphabet soup
       header = data[0],
       t = [], // temporary array will have named indexes 
@@ -310,18 +315,50 @@ app.get('/', function(req, res){
 });
 
 app.get('/vis/:vname', function(req, res){
-  var vname = req.params.vname, 
-    dname = vname.split('_').join(' '),
-    config,
-    user = {
-      name: 'TJ',
-      email: 'tj@vision-media.ca',
-      city: 'Victoria',
-      province: 'BC'
-    };
+  var vname = req.params.vname,
+    selectedOptions; // undefined on a get
 
   // http://howtonode.org/control-flow
-  buildSeries(vname, config, function(series) {
+  buildSeries(vname, selectedOptions, function(s) {
+    var config = s.shift();
+
+    res.render('vis', {
+      config: config,
+      series: s
+    });
+  });
+});
+
+app.post('/vis/:vname', function(req, res){
+  var vname = req.params.vname, 
+    selectedOptions = req.body.formOptions;
+
+  buildSeries(vname, selectedOptions, function(s) {
+    var config = s.shift();
+
+    res.render('vis', {
+      config: config,
+      series: s
+    });
+  });
+});
+
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+
+//      title: dname,
+//      series: series,
+//      formOptions: selectedOptions
+
+//    dname = vname.split('_').join(' '),
+//    config,
+
+//    dname = vname.split('_').join(' '),
+//    config,
+//    formOptions = {
+//      fromDate: '2011-08-23'
+//    };
+
 
 //var p = series.pop();
 //console.log("foo");
@@ -331,19 +368,3 @@ app.get('/vis/:vname', function(req, res){
 //console.log("baz");
 //console.log(series[1]['data'].slice(0,5));
 
-    res.render('vis', {
-      title: dname,
-      series: series,
-      user: user
-    });
-  });
-});
-
-app.post('/vis/:vname', function(req, res){
-  console.log(req.body);
-  res.redirect('/vis/' + req.params.vname);
-});
-
-
-app.listen(3000);
-console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
