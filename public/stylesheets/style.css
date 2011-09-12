@@ -16,12 +16,21 @@ a {
   stroke: #000;
 }
 
-.hrule line {
+.hlrule line {
   stroke: #eee;
   shape-rendering: crispEdges;
 }
 
-.hrule line.axis {
+.hlrule line.axis {
+  stroke: #000;
+}
+
+.hrrule line {
+  stroke: #eee;
+  shape-rendering: crispEdges;
+}
+
+.hrrule line.axis {
   stroke: #000;
 }
 

@@ -7,7 +7,6 @@ function plotSeries(s) {
   }
 }
 
-//data,xMax,xMin,yLeftMax,yLeftMin
 function plotData(o,b,c) {
   var w = 800,
     h = 275,
@@ -15,12 +14,21 @@ function plotData(o,b,c) {
     t = o['seriesName'],
     xb = b['seriesMin']['x'],
     xt = b['seriesMax']['x'],
-    yb = b['seriesMin']['yLeft'],
-    yt = b['seriesMax']['yLeft'],
-    l = c['xLabs'],
-    x = d3.scale.linear().domain([xb, xt]).range([0, w]),
-    y = d3.scale.linear().domain([yb, yt]).range([h, 0]),
-    xl = d3.scale.ordinal().domain(l).rangePoints([0, w]),
+
+    ylb = b['seriesMin']['yLeft'],
+    ylt = b['seriesMax']['yLeft'],
+
+    yrb = b['seriesMin']['yRight'],
+    yrt = b['seriesMax']['yRight'],
+
+    xl = c['xLabs'],
+
+    xs = d3.scale.linear().domain([xb, xt]).range([0, w]),
+    yls = d3.scale.linear().domain([ylb, ylt]).range([h, 0]),
+    yrs = d3.scale.linear().domain([yrb, yrt]).range([h, 0]),
+
+    xls = d3.scale.ordinal().domain(xl).rangePoints([0, w]),
+
     data = o.data;
 
   d3.select("body")
@@ -39,59 +47,95 @@ function plotData(o,b,c) {
     
   vis.append("svg:path")
     .attr("fill","none")
-    .attr("stroke","magenta")
+    .attr("stroke","red")
     .attr("stroke-width","1.5px")
     .attr("d", d3.svg.line()
-    .x(function(d) { return x(d.x); })
-    .y(function(d) { return y(d.yLeft_1); }));
+    .x(function(d) { return xs(d.x); })
+    .y(function(d) { return yls(d.yLeft_1); }));
+
+//  vis.append("svg:path")
+//    .attr("fill","none")
+//    .attr("stroke","blue")
+//    .attr("stroke-width","1.5px")
+//    .attr("d", d3.svg.line()
+//    .x(function(d) { return xs(d.x); })
+//    .y(function(d) { return yls(d.yLeft_2); }));
 
   vis.append("svg:path")
     .attr("fill","none")
-    .attr("stroke","blue")
+    .attr("stroke","green")
     .attr("stroke-width","1.5px")
     .attr("d", d3.svg.line()
-    .x(function(d) { return x(d.x); })
-    .y(function(d) { return y(d.yLeft_2); }));
+    .x(function(d) { return xs(d.x); })
+    .y(function(d) { return yrs(d.yRight_1); }));
+
+//  vis.append("svg:path")
+//    .attr("fill","none")
+//    .attr("stroke","orange")
+//    .attr("stroke-width","1.5px")
+//    .attr("d", d3.svg.line()
+//    .x(function(d) { return xs(d.x); })
+//    .y(function(d) { return yrs(d.yRight_3); }));
 
   //vertical rules
   var vrules = vis.selectAll("g.vrule")
-    .data(l)
+    .data(xl)
     .enter().append("svg:g")
     .attr("class", "vrule");
 
   vrules.append("svg:line")
-    .attr("x1", xl)
-    .attr("x2", xl)
+    .attr("x1", xls)
+    .attr("x2", xls)
     .attr("y1", 0)
     .attr("y2", h - 1);
 
   vrules.append("svg:text")
-    .attr("x", xl)
+    .attr("x", xls)
     .attr("y", h + 3)
     .attr("dy", ".71em")
     .attr("text-anchor", "start")
     .text(function(d,i) { return d;});
 
   //horizontal lines
-  var hrules = vis.selectAll("g.hrule")
-    .data(y.ticks(20))
+  var hlrules = vis.selectAll("g.hlrule")
+    .data(yls.ticks(20))
     .enter().append("svg:g")
-    .attr("class", "hrule");
+    .attr("class", "hlrule");
 
-  hrules.append("svg:line")
+  hlrules.append("svg:line")
     //.attr("class", function(d) { return d ? null : "axis"; })
-    .attr("y1", y)
-    .attr("y2", y)
+    .attr("y1", yls)
+    .attr("y2", yls)
     .attr("x1", 0)
     .attr("x2", w + 1);
 
-  hrules.append("svg:text")
-    .attr("y", y)
+  hlrules.append("svg:text")
+    .attr("y", yls)
     .attr("x", -3)
     .attr("dy", ".35em")
+    .attr("stroke", "red")
     .attr("text-anchor", "end")
-    .text(y.tickFormat(10));
+    .text(yls.tickFormat(10));
 
+  var hrrules = vis.selectAll("g.hrrule")
+    .data(yrs.ticks(20))
+    .enter().append("svg:g")
+    .attr("class", "hrule");
+
+  hrrules.append("svg:line")
+    //.attr("class", function(d) { return d ? null : "axis"; })
+    .attr("y1", yrs)
+    .attr("y2", yrs)
+    .attr("x1", 0)
+    .attr("x2", w + 1);
+
+  hrrules.append("svg:text")
+    .attr("y", yrs)
+    .attr("x", w + 9)
+    .attr("dy", ".35em")
+    .attr("stroke", "green")
+    .attr("text-anchor", "start")
+    .text(yrs.tickFormat(10));
   d3.select("body").append("p").append("p");
 
 };

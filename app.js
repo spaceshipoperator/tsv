@@ -221,9 +221,6 @@ function buildSeries (name, config, next) {
         dataMin[k] = minp;
       }
 
-/*
-      t[o]['dataCount'] = t[o]['data'].length;
-*/
       t[o]['dataMax'] = dataMax;
       t[o]['dataMin'] = dataMin;
     }
@@ -231,9 +228,6 @@ function buildSeries (name, config, next) {
     // finally get the x and y bounds over all series
     var seriesMax = {},
       seriesMin = {},
-/*
-      xc = [],
-*/
       xt = [],
       xb = [],
       ylt = [],
@@ -244,10 +238,6 @@ function buildSeries (name, config, next) {
       sb = {};
   
     for (d in t) {
-/*
-      xc.push(t[d]['dataCount']);
-*/
-
       xt.push(t[d]['dataMax']['x']);
       xb.push(t[d]['dataMin']['x']);
   
@@ -276,30 +266,6 @@ function buildSeries (name, config, next) {
 
     yrt.push(0);
     yrb.push(0);
-
-/*  
-    sc = Array.max(xc);
-    switch (sc) {
-    case checkRange(sc, 0, 90):
-        sb['seriesMod'] = 15;
-        break;
-    case checkRange(sc, 91, 180):
-        sb['seriesMod'] = 30;
-        break;
-    case checkRange(sc, 181, 360):
-        sb['seriesMod'] = 60;
-        break;
-    case checkRange(sc, 361, 540):
-        sb['seriesMod'] = 90;
-        break;
-    case checkRange(sc, 541, 720):
-        sb['seriesMod'] = 120;
-        break;
-    default:
-        sb['seriesMod'] = 150;
-        break;
-    }
-*/
 
     seriesMax['x'] = Array.max(xt);
     seriesMin['x'] = Array.min(xb);
@@ -346,7 +312,14 @@ app.get('/', function(req, res){
 app.get('/vis/:vname', function(req, res){
   var vname = req.params.vname, 
     dname = vname.split('_').join(' '),
-    config;
+    config,
+    user = {
+      name: 'TJ',
+      email: 'tj@vision-media.ca',
+      city: 'Victoria',
+      province: 'BC'
+    };
+
   // http://howtonode.org/control-flow
   buildSeries(vname, config, function(series) {
 
@@ -360,10 +333,17 @@ app.get('/vis/:vname', function(req, res){
 
     res.render('vis', {
       title: dname,
-      series: series
+      series: series,
+      user: user
     });
   });
 });
+
+app.post('/vis/:vname', function(req, res){
+  console.log(req.body);
+  res.redirect('/vis/' + req.params.vname);
+});
+
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
