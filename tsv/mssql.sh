@@ -9,6 +9,6 @@ SQLFILE=/tmp/isql_query.$RANDOM.sql
 
 echo $CMD > $SQLFILE
 
-isql -c -d, edwdev < $SQLFILE | sed '1,9d' | tac | sed '1d' | tac 
+isql -q -c -d, edwdev < $SQLFILE | sed '1,9d' | tac | sed '1d' | tac 
 
-rm $SQLFILE
+#rm $SQLFILE

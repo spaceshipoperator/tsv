@@ -127,7 +127,7 @@ var getXlabs = function(f,u) {
 var getConfigCmd = function(c) {
   c.cmd = c.cmd.replace('~fromDate', "'" + dateToStr(c.fromDate.value) + "'");
   c.cmd = c.cmd.replace('~untilDate', "'" + dateToStr(c.untilDate.value) + "'");
-  c.cmd = c.cmd.replace('~seriesKeys', "'" + c.series.keys + "'");
+  c.cmd = c.cmd.replace('~seriesKeys', "'" + c.series.selected + "'");
   return(c.cmd);
 };
 
@@ -151,7 +151,7 @@ function getSeriesConfig(vname, selectedOptions, next) {
     if (selectedOptions) {
       c['fromDate'].value = parseDateString(selectedOptions.fromDate);
       c['untilDate'].value = parseDateString(selectedOptions.untilDate);
-      c['series']['selected'].value = selectedOptions.seriesKeys;
+      c['series']['selected'] = selectedOptions.seriesKeys;
     }
 
     results.push(c);
@@ -167,6 +167,9 @@ function getSeriesData (vname, selectedOptions, next) {
       // if we tuck it away in the config for now at least that gives us options 
       // for calling different stuff...still ugly I know
       csv = spawn('./tsv/mssql.sh', [getConfigCmd(c)]);
+
+    console.log("baz");
+    console.log(getConfigCmd(c));
 
     new lazy(csv.stdout).lines.map(String).map(function (line){
       return line.split(',');
@@ -321,6 +324,11 @@ app.get('/vis/:vname', function(req, res){
   // http://howtonode.org/control-flow
   buildSeries(vname, selectedOptions, function(s) {
     var config = s.shift();
+
+    //console.log("foo");
+    //console.log(config);
+    //console.log("bar");
+    //console.log(s);
 
     res.render('vis', {
       config: config,
