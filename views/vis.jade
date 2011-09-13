@@ -3,26 +3,39 @@ h1= config.name
 p
 script(src='/javascripts/tsv.js')
 - if (typeof(series) != null)
-  != "<script type='text/javascript'>"
+  != "<script type='text/javascript'> "
   != "function initData() { "
   != "  var s = " + JSON.stringify(series) + "; "
   != "  var c = " + JSON.stringify(config) + "; "
   != "  plotSeries(s,c); "
   != "}"
   != "</script>"
-body(onload="initData()")
+
+script
+  $('document').ready(function(){
+    var f = '#{config.fromDate.value}';
+    $('#formOptionsFromDate').val(f);
+
+    $('#fromDatePicker').datepicker({ dateFormat: 'yy-mm-dd',
+      onSelect: function(dateText, inst) {
+        $('[name="formOptions[fromDate]"]').val(dateText);
+        $('#formOptionsFromDate').val(dateText);
+        var v = $('#formOptionsFromDate').val();
+      }
+    }); 
+  });
+
+body(onload="initData()", style="font-size:62.5%;")
 
 form(method="post")
   fieldset
-    legend General
+    legend Settings
     p
       label(for="formOptions[fromDate]") From Date:
-        input(type="date", name="formOptions[fromDate]", value=config.fromDate.value)
-    p
-      label(for="formOptions[untilDate]") From Date:
-        input(type="date", name="formOptions[untilDate]", value=config.untilDate.value)
+        input(name="formOptions[fromDate]", type="hidden", value=config.fromDate.value)
+      div#fromDatePicker
   fieldset
-    legend Location
+    legend=config.series.label
     p
       select(name="formOptions[seriesKeys]", multiple, size=config.series.options.length)
         - for (var i in config.series.options)

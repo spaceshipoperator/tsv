@@ -125,8 +125,8 @@ var getXlabs = function(f,u) {
 };
 
 var getConfigCmd = function(c) {
-  c.cmd = c.cmd.replace('~fromDate', "'" + dateToStr(c.fromDate.value) + "'");
-  c.cmd = c.cmd.replace('~untilDate', "'" + dateToStr(c.untilDate.value) + "'");
+  c.cmd = c.cmd.replace('~fromDate', "'" + c.fromDate.value.replace(/-/g,'') + "'");
+  c.cmd = c.cmd.replace('~untilDate', "'" + c.untilDate.value.replace(/-/g,'') + "'");
   c.cmd = c.cmd.replace('~seriesKeys', "'" + c.series.selected + "'");
   return(c.cmd);
 };
@@ -142,16 +142,16 @@ function getSeriesConfig(vname, selectedOptions, next) {
       var k = b[i]; 
 
       if (c[k].defaultValue.string) {
-        c[k].value = parseDateString(c[k].defaultValue.string);
+        c[k].value = c[k].defaultValue.string;
       } else if (c[k].defaultValue.function) {
         c[k].value = eval(c[k].defaultValue.function);
       }
     }
 
     if (selectedOptions) {
-      c['fromDate'].value = parseDateString(selectedOptions.fromDate);
-      c['untilDate'].value = parseDateString(selectedOptions.untilDate);
-      c['series']['selected'] = selectedOptions.seriesKeys;
+      if (selectedOptions.fromDate) { c['fromDate'].value = selectedOptions.fromDate; }
+      if (selectedOptions.untilDate) { c['untilDate'].value = selectedOptions.untilDate; }
+      if (selectedOptions.seriesKeys) { c['series']['selected'] = selectedOptions.seriesKeys; }
     }
 
     results.push(c);
@@ -188,7 +188,7 @@ function buildSeries (vname, selectedOptions, next) {
       results = []; // will be sent to next, must be JSON stringifiable
 
     // todo: need to drive this by the data rather than the config
-    q['xLabs'] = getXlabs(q.fromDate.value, q.untilDate.value);
+    q['xLabs'] = getXlabs(parseDateString(q.fromDate.value), parseDateString(q.untilDate.value));
 
     for(var i = 1; i < data.length ; i++) {
       var c = data[i];
@@ -325,11 +325,6 @@ app.get('/vis/:vname', function(req, res){
   buildSeries(vname, selectedOptions, function(s) {
     var config = s.shift();
 
-    //console.log("foo");
-    //console.log(config);
-    //console.log("bar");
-    //console.log(s);
-
     res.render('vis', {
       config: config,
       series: s
@@ -340,6 +335,17 @@ app.get('/vis/:vname', function(req, res){
 app.post('/vis/:vname', function(req, res){
   var vname = req.params.vname, 
     selectedOptions = req.body.formOptions;
+  
+  ///this is bad
+  var u = parseDateString(selectedOptions.fromDate);
+
+  var v = new Date(u.getTime()+od);
+  console.log(u);
+  console.log(v);
+  selectedOptions['untilDate'] = dateToStr(v);
+ 
+  console.log('foo');
+  console.log(JSON.stringify(selectedOptions));
 
   buildSeries(vname, selectedOptions, function(s) {
     var config = s.shift();
