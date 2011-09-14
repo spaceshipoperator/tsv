@@ -112,7 +112,11 @@ var dateToLabel = function(v) {
   return r; 
 };
 
-var getXlabs = function(f,u) {
+var getXlabs = function(fn,un) {
+  // a little more nastiness
+  var f = new Date(fn.getTime()+1000*60*60*6.6),
+    u = new Date(un.getTime()-1000*60*60*1); 
+
   var t = (u.getTime() - f.getTime())/7,
     v = 0,
     r = [];
