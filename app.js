@@ -10,8 +10,7 @@ var express = require('express'),
   // one day in milliseconds...used within a few helper functions
   od = 1000*60*60*24; 
 
-// Configuration
-
+// express configuration
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -48,6 +47,20 @@ var isConfig = function(x) {
   return String(x).match(re);
 };
 
+var dateToStr = function (d) {
+  var y = d.getFullYear().toString(),
+    m = '0' + (d.getMonth() +1).toString(),
+    s = '0' + d.getDate().toString();
+    return y + '-' + m.substring(m.length - 2) + '-' + s.substring(s.length - 2);
+};
+
+var daysAfter = function(d,n) {
+  var b = new Date(d);
+  var e = new Date(b.getTime() + (n*od));
+  return dateToStr(e);
+};
+
+/* 
 var startOfWeek = function(d) {
   var t = d || new Date();  
   var td = new Date(t.getFullYear(), t.getMonth(), t.getDate());
@@ -65,29 +78,22 @@ var endOfWeek = function(d) {
 var endOfPreviousWeek = function(d) {
   return new Date(startOfPreviousWeek(d).getTime() + (7 * od));
 };
+*/
 
 var parseDateString = function(s) {
   var a, d, t, r;
 
   a = s.split(' '); 
   d = a[0].split('-').map(Number);
-  console.log(d);
+
   if (a[1]) {
     t = a[1].split(':').map(Number);
-    console.log(t);
     r = new Date(d[0], d[1] -1, d[2], t[0], t[1]);      
   } else {
     r = new Date(d[0], d[1] -1, d[2]);      
   }
 
   return r;
-};
-
-var dateToStr = function (d) {
-  var y = d.getFullYear().toString(),
-    m = '0' + (d.getMonth() +1).toString(),
-    s = '0' + d.getDate().toString();
-    return y + m.substring(m.length - 2) + s.substring(s.length - 2);
 };
 
 var dateToLabel = function(v) {
@@ -124,34 +130,37 @@ var getXlabs = function(f,u) {
   return r;
 };
 
-var getConfigCmd = function(c) {
-  c.cmd = c.cmd.replace('~fromDate', "'" + c.fromDate.value.replace(/-/g,'') + "'");
-  c.cmd = c.cmd.replace('~untilDate', "'" + c.untilDate.value.replace(/-/g,'') + "'");
-  c.cmd = c.cmd.replace('~seriesKeys', "'" + c.series.selected + "'");
-  return(c.cmd);
-};
-
 function getSeriesConfig(vname, selectedOptions, next) {
   var results = [];
 
   fs.readFile("./tsv/" + vname + ".json", function(err,buffer) {
     var c = JSON.parse(buffer),
-      b = ['fromDate','untilDate'];
+      b = ['fromDate','untilDate','series'];
 
     for (var i in b) {
-      var k = b[i]; 
+      var k = b[i],
+        re = new RegExp("~"+k, "g");
 
-      if (c[k].defaultValue.string) {
-        c[k].value = c[k].defaultValue.string;
-      } else if (c[k].defaultValue.function) {
-        c[k].value = eval(c[k].defaultValue.function);
+      // set the value of config element c[k]
+      // based on options selected in the ui
+      // or default settings
+      if (selectedOptions && selectedOptions[k]) {
+        var s = selectedOptions[k];
+
+        console.log("foo");
+        console.log(s);
+
+        if (s) { (s instanceof Array) ? c[k].value = s.join(',') : c[k].value = s; }
+      } else {
+        if (c[k]['default']['value']) {
+          c[k].value = c[k]['default']['value'];
+        } else if (c[k]['default']['function']) {
+          c[k].value = eval(c[k]['default']['function']);
+        }
       }
-    }
 
-    if (selectedOptions) {
-      if (selectedOptions.fromDate) { c['fromDate'].value = selectedOptions.fromDate; }
-      if (selectedOptions.untilDate) { c['untilDate'].value = selectedOptions.untilDate; }
-      if (selectedOptions.seriesKeys) { c['series']['selected'] = selectedOptions.seriesKeys; }
+      // replacements based on the value of c[k]
+      c = JSON.parse(JSON.stringify(c).replace(re, "'"+c[k].value+"'"));
     }
 
     results.push(c);
@@ -166,10 +175,10 @@ function getSeriesData (vname, selectedOptions, next) {
       // todo: get rid of this ugliness calling a shell script here...
       // if we tuck it away in the config for now at least that gives us options 
       // for calling different stuff...still ugly I know
-      csv = spawn('./tsv/mssql.sh', [getConfigCmd(c)]);
+      csv = spawn('./tsv/mssql.sh', [c.cmd]);
 
     console.log("baz");
-    console.log(getConfigCmd(c));
+    console.log(c.cmd);
 
     new lazy(csv.stdout).lines.map(String).map(function (line){
       return line.split(',');
@@ -335,17 +344,9 @@ app.get('/vis/:vname', function(req, res){
 app.post('/vis/:vname', function(req, res){
   var vname = req.params.vname, 
     selectedOptions = req.body.formOptions;
-  
-  ///this is bad
-  var u = parseDateString(selectedOptions.fromDate);
 
-  var v = new Date(u.getTime()+od);
-  console.log(u);
-  console.log(v);
-  selectedOptions['untilDate'] = dateToStr(v);
- 
   console.log('foo');
-  console.log(JSON.stringify(selectedOptions));
+  console.log(selectedOptions);
 
   buildSeries(vname, selectedOptions, function(s) {
     var config = s.shift();
@@ -359,26 +360,3 @@ app.post('/vis/:vname', function(req, res){
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-
-//      title: dname,
-//      series: series,
-//      formOptions: selectedOptions
-
-//    dname = vname.split('_').join(' '),
-//    config,
-
-//    dname = vname.split('_').join(' '),
-//    config,
-//    formOptions = {
-//      fromDate: '2011-08-23'
-//    };
-
-
-//var p = series.pop();
-//console.log("foo");
-//console.log(p);
-//console.log("bar");
-//console.log(series[0]);
-//console.log("baz");
-//console.log(series[1]['data'].slice(0,5));
-
