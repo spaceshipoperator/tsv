@@ -22,7 +22,7 @@
       [ 70348, "University Place UCC" ],
       [ 70448, "Westgate UCC" ]
     ],
-    "default": { "value": "30401,30148,70648,30348,70548,70248,70348,70448" }
+    "default": { "value": "30148,30348,30401,70248,70348,70448,70548,70648" }
   },
   "yLeft": { 
     "options":[
@@ -39,5 +39,5 @@
     ],
     "default": { "value": "1" }
   },
-  "cmd": "exec edw.UCC.TimeframeCensusTS ~fromDate, ~untilDate, ~series;"
+  "cmd": "exec edw.UCC.TimeframeCensusTS ~fromDate, ~series;"
 }
