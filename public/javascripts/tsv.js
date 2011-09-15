@@ -60,13 +60,22 @@ function plotData(o,b,c) {
 //    .x(function(d) { return xs(d.x); })
 //    .y(function(d) { return yls(d.yLeft_2); }));
 
-  vis.append("svg:path")
-    .attr("fill","none")
-    .attr("stroke","green")
-    .attr("stroke-width","1.5px")
-    .attr("d", d3.svg.line()
-    .x(function(d) { return xs(d.x); })
-    .y(function(d) { return yrs(d.yRight_1); }));
+  vis.selectAll("circle.line")
+    .data(data)
+    .enter().append("svg:circle")
+    .attr("stroke","steelblue")
+    .attr("class", "line")
+    .attr("cx", function(d) { return xs(d.x); })
+    .attr("cy", function(d) { return yrs(d.yRight_1); })
+    .attr("r", 1.5);
+
+//  vis.append("svg:path")
+//    .attr("fill","none")
+//    .attr("stroke","green")
+//    .attr("stroke-width","1.5px")
+//    .attr("d", d3.svg.line()
+//    .x(function(d) { return xs(d.x); })
+//    .y(function(d) { return yrs(d.yRight_1); }));
 
 //  vis.append("svg:path")
 //    .attr("fill","none")
