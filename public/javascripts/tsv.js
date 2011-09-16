@@ -20,7 +20,7 @@ function plotData(o,b,c) {
     yrb = b['seriesMin']['yRight'],
     yrt = b['seriesMax']['yRight'],
 
-    xl = c['xLabs'],
+    xl = c['xLabels']['value'].split(','),
 
     xs = d3.scale.linear().domain([xb, xt]).range([0, w]),
     yls = d3.scale.linear().domain([ylb, ylt]).range([h, 0]),
@@ -141,7 +141,7 @@ function plotData(o,b,c) {
     .attr("y", yrs)
     .attr("x", w + 9)
     .attr("dy", ".35em")
-    .attr("stroke", "green")
+    .attr("stroke", "steelblue")
     .attr("text-anchor", "start")
     .text(yrs.tickFormat(10));
   d3.select("body").append("p").append("p");

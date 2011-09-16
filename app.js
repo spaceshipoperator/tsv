@@ -80,60 +80,6 @@ var endOfPreviousWeek = function(d) {
 };
 */
 
-var parseDateString = function(s) {
-  var a, d, t, r;
-
-  a = s.split(' '); 
-  d = a[0].split('-').map(Number);
-
-  if (a[1]) {
-    t = a[1].split(':').map(Number);
-    r = new Date(d[0], d[1] -1, d[2], t[0], t[1]);      
-  } else {
-    r = new Date(d[0], d[1] -1, d[2]);      
-  }
-
-  return r;
-};
-
-var dateToLabel = function(v) {
-  var m = (v.getMonth() +1).toString(),
-    d = '0' + v.getDate().toString(),
-    h = v.getHours(),
-    f = '0' + (Math.round(v.getMinutes()/10)*10).toString(),
-    r = "";
-
-  r = m.substring(m.length - 2) + "/";
-  r = r + d.substring(d.length - 2) + '@';
-  r = r + (h == 0 ? '12' : h.toString()) + ":";
-  r = r + f.substring(f.length -2) ;
-  r = r + (h >= 12 ? 'p' : 'a');
-
-  return r; 
-};
-
-var getXlabs = function(fn,un) {
-  // a little more nastiness
-  var f = new Date(fn.getTime()+1000*60*60*6.6),
-    u = new Date(un.getTime()-1000*60*60*1); 
-
-  var t = (u.getTime() - f.getTime())/7,
-    v = 0,
-    r = [];
-
-  r.push(dateToLabel(f));
-
-  for (var i = 0; i < 5; i++) {
-    v = v + t;
-    var d = new Date(f.getTime() + v);
-    r.push(dateToLabel(d));
-  }
-
-  r.push("y" + u.getFullYear().toString());
-
-  return r;
-};
-
 function getSeriesConfig(vname, selectedOptions, next) {
   var results = [];
 
@@ -147,12 +93,9 @@ function getSeriesConfig(vname, selectedOptions, next) {
 
       // set the value of config element c[k]
       // based on options selected in the ui
-      // or default settings
+      // otherwise default settings
       if (selectedOptions && selectedOptions[k]) {
         var s = selectedOptions[k];
-
-        console.log("foo");
-        console.log(s);
 
         if (s) { (s instanceof Array) ? c[k].value = s.join(',') : c[k].value = s; }
       } else {
@@ -201,7 +144,7 @@ function buildSeries (vname, selectedOptions, next) {
       results = []; // will be sent to next, must be JSON stringifiable
 
     // todo: need to drive this by the data rather than the config
-    q['xLabs'] = getXlabs(parseDateString(q.fromDate.value), parseDateString(q.untilDate.value));
+    // q['xLabs'] = getXlabs(parseDateString(q.fromDate.value), parseDateString(q.untilDate.value));
 
     for(var i = 1; i < data.length ; i++) {
       var c = data[i];
@@ -337,6 +280,9 @@ app.get('/vis/:vname', function(req, res){
   // http://howtonode.org/control-flow
   buildSeries(vname, selectedOptions, function(s) {
     var config = s.shift();
+
+    console.log('bar');
+    console.log(config);
 
     res.render('vis', {
       config: config,

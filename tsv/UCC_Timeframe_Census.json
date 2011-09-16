@@ -24,6 +24,9 @@
     ],
     "default": { "value": "30148,30348,30401,70248,70348,70448,70548,70648" }
   },
+  "xLabels": {
+      "value": "6:40a,9:10a,11:40a,2:10p,4:40p,7:10p,9:40p"
+  },
   "yLeft": { 
     "options":[
       [1, "wait time for clinical access"],
