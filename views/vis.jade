@@ -29,10 +29,9 @@ body(onload="initData()", style="font-size:62.5%;")
 
 form(method="post")
   fieldset
-    legend Settings
+    legend=config.fromDate.label
     p
-      label(for="formOptions[fromDate]") From Date:
-        input(name="formOptions[fromDate]", type="hidden", value=config.fromDate.value)
+      input(name="formOptions[fromDate]", type="hidden", value=config.fromDate.value)
       div#fromDatePicker
   fieldset
     legend=config.series.label
@@ -40,6 +39,13 @@ form(method="post")
       select(name="formOptions[series]", multiple, size=config.series.options.length)
         - for (var i in config.series.options)
           - var e = config.series.options[i]
+          option(value=e[0])=e[1]
+  fieldset
+    legend=config.selectionScope.label
+    p
+      select(name="formOptions[selectionScope]", size=config.selectionScope.options.length)
+        - for (var i in config.selectionScope.options)
+          - var e = config.selectionScope.options[i]
           option(value=e[0])=e[1]
   p.buttons
     input(type="submit", value="Save")

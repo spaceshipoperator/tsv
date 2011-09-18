@@ -85,7 +85,8 @@ function getSeriesConfig(vname, selectedOptions, next) {
 
   fs.readFile("./tsv/" + vname + ".json", function(err,buffer) {
     var c = JSON.parse(buffer),
-      b = ['fromDate','untilDate','series'];
+      // create this array based on those that have "default" eh?
+      b = ['fromDate','series','selectionScope'];
 
     for (var i in b) {
       var k = b[i],

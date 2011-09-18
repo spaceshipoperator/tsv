@@ -52,13 +52,13 @@ function plotData(o,b,c) {
     .x(function(d) { return xs(d.x); })
     .y(function(d) { return yls(d.yLeft_1); }));
 
-//  vis.append("svg:path")
-//    .attr("fill","none")
-//    .attr("stroke","blue")
-//    .attr("stroke-width","1.5px")
-//    .attr("d", d3.svg.line()
-//    .x(function(d) { return xs(d.x); })
-//    .y(function(d) { return yls(d.yLeft_2); }));
+  vis.append("svg:path")
+    .attr("fill","none")
+    .attr("stroke","blue")
+    .attr("stroke-width","1.5px")
+    .attr("d", d3.svg.line()
+    .x(function(d) { return xs(d.x); })
+    .y(function(d) { return yls(d.yLeft_2); }));
 
   vis.selectAll("circle.line")
     .data(data)

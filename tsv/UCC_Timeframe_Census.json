@@ -6,12 +6,9 @@
     "default": { "value": "2011-08-29" },
     "minimum": { "value": "2010-01-01" }
   },
-  "untilDate":{
-    "isModifiable": false,
-    "default": { "function": "daysAfter(~fromDate, 1)" }
-  },
   "series":{
     "label": "departments: ",
+    "multiple" : true,
     "options": [
       [ 30401, "Auburn UCC" ],
       [ 30148, "Covington UCC" ],
@@ -24,23 +21,36 @@
     ],
     "default": { "value": "30148,30348,30401,70248,70348,70448,70548,70648" }
   },
+  "selectionScope" : {
+    "label" : "specify date range",
+    "multiple" : false,
+    "options": [
+      [ 1, "Selected Date Only" ],
+      [ 2, "Work Week Of Selected Date" ],
+      [ 3, "5 Weeks Of Selected Weekday" ]
+    ],
+    "default": { "value": "1" }
+  },
   "xLabels": {
       "value": "6:40a,9:10a,11:40a,2:10p,4:40p,7:10p,9:40p"
   },
   "yLeft": { 
+    "label" : "left vertical axis",
+    "multiple" : true,
     "options":[
-      [1, "wait time for clinical access"],
-      [2, "wait time for vitals taken" ]
+      [ 1, "actual wait time for clinical access" ],
+      [ 2, "predicted wait time for clinical access" ]
     ],
     "default": { "value": "1" }
   },
   "yRight": { 
+    "label" : "right vertical axis",
+    "multiple" : true,
     "options":[
-      [1, "number of patients waiting for clinical access"],
-      [2, "number of patients waiting for vitals to be taken"],
-      [3, "number of patients seen" ]
+      [ 1, "number of patients waiting for clinical access" ],
+      [ 2, "number of patients seen" ]
     ],
     "default": { "value": "1" }
   },
-  "cmd": "exec edw.UCC.TimeframeCensusTS ~fromDate, ~series;"
+  "cmd": "exec edw.UCC.TimeframeCensusTS ~fromDate, ~series, ~selectionScope;"
 }
