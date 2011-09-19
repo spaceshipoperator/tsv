@@ -13,39 +13,60 @@ script(src='/javascripts/tsv.js')
 
 script
   $('document').ready(function(){
-    var f = '#{config.fromDate.value}';
+    var f = '#{config.fromDate.value}',
+      l = '#{config.series.value}'.split(','),
+      m = '#{config.selectionScope.value}';
+
+    $('[name="formOptions[series]"]').val(l);
+
+    $('[name="formOptions[selectionScope]"]').val(m);
+
     $('#formOptionsFromDate').val(f);
 
     $('#fromDatePicker').datepicker({ dateFormat: 'yy-mm-dd',
+      defaultDate: f,
       onSelect: function(dateText, inst) {
         $('[name="formOptions[fromDate]"]').val(dateText);
         $('#formOptionsFromDate').val(dateText);
         var v = $('#formOptionsFromDate').val();
       }
+    });
+
+    $('#settings').hide();
+    $('#displayText').click(function(){
+      $('#settings').animate({"height": "toggle"}, { duration: 500 }); 
     }); 
   });
 
+a#displayText(href="#", align="right") configure
+
 body(onload="initData()", style="font-size:62.5%;")
 
-form(method="post")
-  fieldset
-    legend=config.fromDate.label
-    p
-      input(name="formOptions[fromDate]", type="hidden", value=config.fromDate.value)
-      div#fromDatePicker
-  fieldset
-    legend=config.series.label
-    p
-      select(name="formOptions[series]", multiple, size=config.series.options.length)
-        - for (var i in config.series.options)
-          - var e = config.series.options[i]
-          option(value=e[0])=e[1]
-  fieldset
-    legend=config.selectionScope.label
-    p
-      select(name="formOptions[selectionScope]", size=config.selectionScope.options.length)
-        - for (var i in config.selectionScope.options)
-          - var e = config.selectionScope.options[i]
-          option(value=e[0])=e[1]
-  p.buttons
-    input(type="submit", value="Save")
+div#settings
+  form(method="post")
+    table
+      tr(valign="top")
+        td
+          fieldset
+            legend=config.fromDate.label
+            p
+              input(name="formOptions[fromDate]", type="hidden", value=config.fromDate.value)
+              div#fromDatePicker
+        td
+          fieldset
+            legend=config.series.label
+            p
+              select(name="formOptions[series]", multiple, size=config.series.options.length)
+                - for (var i in config.series.options)
+                  - var e = config.series.options[i]
+                  option(value=e[0])=e[1]
+        td
+          fieldset
+            legend=config.selectionScope.label
+            p
+              select(name="formOptions[selectionScope]", size=config.selectionScope.options.length)
+                - for (var i in config.selectionScope.options)
+                  - var e = config.selectionScope.options[i]
+                  option(value=e[0])=e[1]
+    p.buttons
+      input(type="submit", value="Save")
