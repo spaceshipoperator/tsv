@@ -47,7 +47,7 @@ function plotData(o,b,c) {
   vis.append("svg:path")
     .attr("fill","none")
     .attr("stroke","red")
-    .attr("stroke-width","1.5px")
+    .attr("stroke-width","2px")
     .attr("d", d3.svg.line()
     .x(function(d) { return xs(d.x); })
     .y(function(d) { return yls(d.yLeft_1); }));
@@ -55,7 +55,7 @@ function plotData(o,b,c) {
   vis.append("svg:path")
     .attr("fill","none")
     .attr("stroke","blue")
-    .attr("stroke-width","1.5px")
+    .attr("stroke-width","2px")
     .attr("d", d3.svg.line()
     .x(function(d) { return xs(d.x); })
     .y(function(d) { return yls(d.yLeft_2); }));
@@ -63,8 +63,8 @@ function plotData(o,b,c) {
   vis.selectAll("circle.line")
     .data(data)
     .enter().append("svg:circle")
-    .attr("stroke","steelblue")
-    .attr("class", "line")
+    .attr("stroke","gray")
+    .attr("fill","none")
     .attr("cx", function(d) { return xs(d.x); })
     .attr("cy", function(d) { return yrs(d.yRight_1); })
     .attr("r", 1.5);
@@ -141,7 +141,7 @@ function plotData(o,b,c) {
     .attr("y", yrs)
     .attr("x", w + 9)
     .attr("dy", ".35em")
-    .attr("stroke", "steelblue")
+    .attr("stroke", "gray")
     .attr("text-anchor", "start")
     .text(yrs.tickFormat(10));
   d3.select("body").append("p").append("p");
