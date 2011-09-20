@@ -1,5 +1,12 @@
 function plotSeries(s,c) {
-  var b = s.pop();
+  var b = s.pop(), 
+    a = c.fromDate.value.split('-').map(Number),
+    d = new Date(a[0], a[1] - 1, a[2]);
+
+  d3.select("body")
+    .append("h3")
+    .text(d.toLocaleDateString())
+    .attr("align", "center");
 
   for (var o in s) {
     plotData(s[o],b,c);
@@ -10,7 +17,7 @@ function plotData(o,b,c) {
   var w = 800,
     h = 275,
     p = 30,
-    t = o['seriesName'],
+    t = o['seriesName'].replace(/"/g,''),
     xb = b['seriesMin']['x'],
     xt = b['seriesMax']['x'],
 
@@ -19,6 +26,8 @@ function plotData(o,b,c) {
 
     yrb = b['seriesMin']['yRight'],
     yrt = b['seriesMax']['yRight'],
+
+    sa = 0,
 
     xl = c['xLabels']['value'].split(','),
 
@@ -30,10 +39,10 @@ function plotData(o,b,c) {
 
     data = o.data;
 
-  d3.select("body")
+  var title = d3.select("body")
     .append("hr")
     .append("h3")
-    .text(t)
+    .text("")
     .attr("align", "center");
 
   var vis = d3.select("body")
@@ -66,8 +75,10 @@ function plotData(o,b,c) {
     .attr("stroke","gray")
     .attr("fill","none")
     .attr("cx", function(d) { return xs(d.x); })
-    .attr("cy", function(d) { return yrs(d.yRight_1); })
+    .attr("cy", function(d) { sa = sa + d.yRight_2; return yrs(d.yRight_1); })
     .attr("r", 1.5);
+
+  title.text(t + "  -  " + sa + " patients seen");
 
 //  vis.append("svg:path")
 //    .attr("fill","none")

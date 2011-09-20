@@ -60,13 +60,13 @@ div#settings
                 - for (var i in config.series.options)
                   - var e = config.series.options[i]
                   option(value=e[0])=e[1]
-        td
-          fieldset
-            legend=config.selectionScope.label
-            p
-              select(name="formOptions[selectionScope]", size=config.selectionScope.options.length)
-                - for (var i in config.selectionScope.options)
-                  - var e = config.selectionScope.options[i]
-                  option(value=e[0])=e[1]
+//        td
+//          fieldset
+//            legend=config.selectionScope.label
+//            p
+//              select(name="formOptions[selectionScope]", size=config.selectionScope.options.length)
+//                - for (var i in config.selectionScope.options)
+//                  - var e = config.selectionScope.options[i]
+//                  option(value=e[0])=e[1]
     p.buttons
       input(type="submit", value="Save")
