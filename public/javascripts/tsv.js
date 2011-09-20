@@ -111,7 +111,7 @@ function plotData(o,b,c) {
   vrules.append("svg:text")
     .attr("x", xls)
     .attr("y", h + 3)
-    .attr("dy", ".71em")
+    .attr("dy", "1.71em")
     .attr("text-anchor", "start")
     .text(function(d,i) { return d;});
 
@@ -132,12 +132,12 @@ function plotData(o,b,c) {
     .attr("y", yls)
     .attr("x", -3)
     .attr("dy", ".35em")
-    .attr("stroke", "red")
+    .attr("stroke", "purple")
     .attr("text-anchor", "end")
     .text(yls.tickFormat(10));
 
   var hrrules = vis.selectAll("g.hrrule")
-    .data(yrs.ticks(20))
+    .data(yrs.ticks(10))
     .enter().append("svg:g")
     .attr("class", "hrule");
 
@@ -155,6 +155,7 @@ function plotData(o,b,c) {
     .attr("stroke", "gray")
     .attr("text-anchor", "start")
     .text(yrs.tickFormat(10));
+
   d3.select("body").append("p").append("p");
 
 };
