@@ -280,12 +280,17 @@ app.get('/vis/:vname', function(req, res){
 
   // http://howtonode.org/control-flow
   buildSeries(vname, selectedOptions, function(s) {
+    fs.writeFile("series.json",JSON.stringify(s));
+
     var config = s.shift();
 
     console.log('bar');
     console.log(config);
+    console.log('boo');
+    console.log(s[0]['data'].slice(0,5));
 
     res.render('vis', {
+      chartType: 1,
       config: config,
       series: s
     });
@@ -303,6 +308,7 @@ app.post('/vis/:vname', function(req, res){
     var config = s.shift();
 
     res.render('vis', {
+      chartType: selectedOptions['chartType'],
       config: config,
       series: s
     });

@@ -1,7 +1,10 @@
 h1= config.name
 // http://stackoverflow.com/questions/6270832/jade-express-iterating-over-object-in-inline-js-code-client-side
 p
-script(src='/javascripts/tsv.js')
+- if (chartType == 1)
+  script(src='/javascripts/tsv.js')
+- else
+  script(src='/javascripts/bmc.js')
 - if (typeof(series) != null)
   != "<script type='text/javascript'> "
   != "function initData() { "
@@ -15,11 +18,14 @@ script
   $('document').ready(function(){
     var f = '#{config.fromDate.value}',
       l = '#{config.series.value}'.split(','),
-      m = '#{config.selectionScope.value}';
+      m = '#{config.selectionScope.value}',
+      t = '#{chartType}';
 
     $('[name="formOptions[series]"]').val(l);
 
     $('[name="formOptions[selectionScope]"]').val(m);
+
+    $('[name="formOptions[chartType]"]').val(t);
 
     $('#formOptionsFromDate').val(f);
 
@@ -60,6 +66,13 @@ div#settings
                 - for (var i in config.series.options)
                   - var e = config.series.options[i]
                   option(value=e[0])=e[1]
+        td
+          fieldset
+            legend chart type
+            p
+              select(name="formOptions[chartType]", size=2)
+                option(value=1) line chart
+                option(value=2) motion chart
     p.buttons
       input(type="submit", value="Go")
 //        td
