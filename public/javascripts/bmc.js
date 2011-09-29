@@ -114,38 +114,76 @@ function plotSeries(series,config) {
     .attr("r", 12);
 
   var a = data.map(function() {return 0;}),
-    i = 0,
-    t = setInterval(function() { 
-      circle
-        .transition()
-        .duration(450)
-        .attr("cx", function(d,s) { 
-          if (data[s]['data'][i]) {
-            a[s] = a[s] + data[s]['data'][i]['yRight_2'];
-            return x(a[s]);
-          } else {
-            return this.cx.baseVal.value;
-          }
-        } )
-        .attr("cy", function(d,s) { 
-          if (data[s]['data'][i]) {
-            return y(data[s]['data'][i]['yLeft_1']);
-          } else {
-            return this.cy.baseVal.value;
-          }
-        } )
-        .attr("r", function(d,s) { 
-          if (data[s]['data'][i]) {
-            title.text(data[s]['data'][i]['xTime']);
-            return r(12 + (data[s]['data'][i]['yRight_1'] * 3));
-          } else {
-            return this.r.baseVal.value;
-          }
-        } );
+    i = 0, o = 1;
 
-      i++;
-      // get max data length here
-      if (i > 82) { clearInterval(t); }
-    }, 270);
+  function intervalFunction(){ 
+    circle
+      .transition()
+      .duration(450)
+      .attr("cx", function(d,s) { 
+        if (data[s]['data'][i]) {
+          if (o < 0) {
+            a[s] = a[s] - data[s]['data'][i]['yRight_2'];
+          } else {
+            a[s] = a[s] + data[s]['data'][i]['yRight_2'];
+          }
+          return x(a[s]);
+        } else {
+          return this.cx.baseVal.value;
+        }
+      } )
+      .attr("cy", function(d,s) { 
+        if (data[s]['data'][i]) {
+          return y(data[s]['data'][i]['yLeft_1']);
+        } else {
+          return this.cy.baseVal.value;
+        }
+      } )
+      .attr("r", function(d,s) { 
+        if (data[s]['data'][i]) {
+          title.text(data[s]['data'][i]['xTime']);
+          return r(12 + (data[s]['data'][i]['yRight_1'] * 3));
+        } else {
+          return this.r.baseVal.value;
+        }
+      } );
+
+    i = i + (1*o);
+    // get max data length here
+    if (i > 90) { clearInterval(t); }
+    if (i == 0) { clearInterval(t); }
+  } 
+
+  var t = setInterval(intervalFunction, 270);
+
+  p = d3.select("body")
+    .append("button")
+    .text("pause")
+    .attr("align", "center");
+
+  var g = true;
+
+  function pauseResume() {
+    g = g ? false : true;
+
+    if (g) {
+      t = setInterval(intervalFunction,270);
+      p.text("pause");
+    } else {
+      t = clearInterval(t);
+      o = o * (-1);
+
+      if (o == 1) { 
+        p.text("play");
+      }
+      else {
+        p.text("reverse");
+      }
+
+    }
+
+  };
+
+  p.on("click", pauseResume);
 
 }
