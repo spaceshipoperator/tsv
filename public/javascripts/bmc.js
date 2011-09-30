@@ -119,7 +119,7 @@ function plotSeries(series,config) {
   function intervalFunction(){ 
     circle
       .transition()
-      .duration(450)
+      .duration(180)
       .attr("cx", function(d,s) { 
         if (data[s]['data'][i]) {
           if (o < 0) {
@@ -154,7 +154,7 @@ function plotSeries(series,config) {
     if (i == 0) { clearInterval(t); }
   } 
 
-  var t = setInterval(intervalFunction, 270);
+  var t = setInterval(intervalFunction, 90);
 
   p = d3.select("body")
     .append("button")
@@ -167,7 +167,7 @@ function plotSeries(series,config) {
     g = g ? false : true;
 
     if (g) {
-      t = setInterval(intervalFunction,270);
+      t = setInterval(intervalFunction, 90);
       p.text("pause");
     } else {
       t = clearInterval(t);

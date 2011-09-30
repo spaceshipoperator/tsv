@@ -15,7 +15,7 @@ function plotSeries(s,c) {
 
 function plotData(o,b,c) {
   var w = 800,
-    h = 275,
+    h = 175,
     p = 30,
     t = o['seriesName'].replace(/"/g,''),
     xb = b['seriesMin']['x'],
@@ -117,7 +117,7 @@ function plotData(o,b,c) {
 
   //horizontal lines
   var hlrules = vis.selectAll("g.hlrule")
-    .data(yls.ticks(20))
+    .data(yls.ticks(10))
     .enter().append("svg:g")
     .attr("class", "hlrule");
 
@@ -137,7 +137,7 @@ function plotData(o,b,c) {
     .text(yls.tickFormat(10));
 
   var hrrules = vis.selectAll("g.hrrule")
-    .data(yrs.ticks(10))
+    .data(yrs.ticks(5))
     .enter().append("svg:g")
     .attr("class", "hrule");
 
