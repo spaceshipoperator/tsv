@@ -150,8 +150,6 @@ function plotSeries(series,config) {
     var p = [i, i + ( series.length * o)];
 
     circle
-      .transition()
-      .duration(180)
       .attr("opacity", function(d,s) {
         var f = .05;
         if ((s >= Array.min(p)) && (s < Array.max(p))) {
@@ -172,7 +170,7 @@ function plotSeries(series,config) {
     if (i <= 0) { clearInterval(v); }
   } 
 
-  var v = setInterval(intervalFunction, 180);
+  var v = setInterval(intervalFunction, 120);
 
   p = d3.select("body")
     .append("p")
@@ -186,7 +184,7 @@ function plotSeries(series,config) {
     g = g ? false : true;
 
     if (g) {
-      v = setInterval(intervalFunction, 180);
+      v = setInterval(intervalFunction, 120);
       p.text("pause");
     } else {
       v = clearInterval(v);
