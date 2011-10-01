@@ -1,8 +1,16 @@
+Array.max = function( array ){
+    return Math.max.apply( Math, array );
+};
+
+Array.min = function( array ){
+    return Math.min.apply( Math, array );
+};
+
 function plotSeries(series,config) {
   var b = series.pop(), 
-    data = series,
+    data = [], 
     w = 800,
-    h = 275,
+    h = 300,
     p = 30,
 
     // timeframe bottom and top
@@ -86,7 +94,7 @@ function plotSeries(series,config) {
     .text(y.tickFormat(10));
 
     // Legend
-  for (var l = 0; l < data.length; l++) {
+  for (var l = 0; l < series.length; l++) {
     svg.append("svg:rect")
       .attr("y", l * 12 + 10)
       .attr("x", 12)
@@ -99,64 +107,75 @@ function plotSeries(series,config) {
       .attr("y", l * 12 + 10)
       .attr("dy", ".75em")
       .attr("text-anchor", "start")
-      .text(data[l]['seriesName'].replace(/"/g,''));
+      .text(series[l]['seriesName'].replace(/"/g,''));
   }
+
+  var a = series.map(function() {return 0;});
+  
+  var t = [];
+
+  series.map(function(e,i){
+    e.data.map(function(o){
+      a[i] = a[i] + o.yRight_2;
+      o.i = i;
+      o.a = a[i];
+      t.push(o);
+    });
+  });
+
+  function compare(a,b) {
+    if (a.x < b.x)
+       return -1;
+    if (a.x > b.x)
+      return 1;
+    return 0;
+  }
+
+  data = t.sort(compare);
 
   //plot the initial set of circles
   var circle = svg.selectAll("circle")
     //.data(data.map(function() {return 0;}))
     .data(data)
     .enter().append("svg:circle")
-    .attr("fill", function(d,i) {return c(i);})
-    .attr("opacity", .75)
-    .attr("cx", x(0))
-    .attr("cy", y(-20))
-    .attr("r", 12);
+    .attr("fill", function(d,i) {return c(d.i);})
+    .attr("opacity", 0)
+    .attr("cx", function(d,i) {return x(d.a);})
+    .attr("cy", function(d,i) {return y(d.yLeft_1);})
+    .attr("r", function(d,i) {return r(9 + (d.yRight_1 * 3));});
 
-  var a = data.map(function() {return 0;}),
-    i = 0, o = 1;
+  var i = 0, o = 1;
 
   function intervalFunction(){ 
+    var p = [i, i + ( series.length * o)];
+
     circle
       .transition()
       .duration(180)
-      .attr("cx", function(d,s) { 
-        if (data[s]['data'][i]) {
-          if (o < 0) {
-            a[s] = a[s] - data[s]['data'][i]['yRight_2'];
-          } else {
-            a[s] = a[s] + data[s]['data'][i]['yRight_2'];
-          }
-          return x(a[s]);
+      .attr("opacity", function(d,s) {
+        var f = .05;
+        if ((s >= Array.min(p)) && (s < Array.max(p))) {
+          title.text(data[s].xTime);
+          f = .80;
+        //} else if (((o > 0) && (s < Array.min(p))) || ((o < 0) && (s >= Array.max(p))))  {
+        } else if ((s > (series.length * 6)) && (s < Array.min(p))) {
+          f = .10;
         } else {
-          return this.cx.baseVal.value;
+          f = 0;
         }
-      } )
-      .attr("cy", function(d,s) { 
-        if (data[s]['data'][i]) {
-          return y(data[s]['data'][i]['yLeft_1']);
-        } else {
-          return this.cy.baseVal.value;
-        }
-      } )
-      .attr("r", function(d,s) { 
-        if (data[s]['data'][i]) {
-          title.text(data[s]['data'][i]['xTime']);
-          return r(12 + (data[s]['data'][i]['yRight_1'] * 3));
-        } else {
-          return this.r.baseVal.value;
-        }
-      } );
+        return f;
+      });
 
-    i = i + (1*o);
+    i = p[1];
     // get max data length here
-    if (i > 90) { clearInterval(t); }
-    if (i == 0) { clearInterval(t); }
+    if (i >= data.length) { clearInterval(v); }
+    if (i <= 0) { clearInterval(v); }
   } 
 
-  var t = setInterval(intervalFunction, 90);
+  var v = setInterval(intervalFunction, 180);
 
   p = d3.select("body")
+    .append("p")
     .append("button")
     .text("pause")
     .attr("align", "center");
@@ -167,10 +186,10 @@ function plotSeries(series,config) {
     g = g ? false : true;
 
     if (g) {
-      t = setInterval(intervalFunction, 90);
+      v = setInterval(intervalFunction, 180);
       p.text("pause");
     } else {
-      t = clearInterval(t);
+      v = clearInterval(v);
       o = o * (-1);
 
       if (o == 1) { 
@@ -185,5 +204,10 @@ function plotSeries(series,config) {
   };
 
   p.on("click", pauseResume);
+
+/*
+  var a = data.map(function() {return 0;}),
+    i = 0, o = 1;
+*/
 
 }
