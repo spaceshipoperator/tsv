@@ -68,14 +68,6 @@ div#settings
                   option(value=e[0])=e[1]
         td
           fieldset
-            legend=config.selectionScope.label
-            p
-              select(name="formOptions[selectionScope]", size=config.selectionScope.options.length)
-                - for (var i in config.selectionScope.options)
-                  - var e = config.selectionScope.options[i]
-                  option(value=e[0])=e[1]
-        td
-          fieldset
             legend chart type
             p
               select(name="formOptions[chartType]", size=2)
@@ -83,3 +75,11 @@ div#settings
                 option(value=2) motion chart
     p.buttons
       input(type="submit", value="Go")
+//        td
+//          fieldset
+//            legend=config.selectionScope.label
+//            p
+//              select(name="formOptions[selectionScope]", size=config.selectionScope.options.length)
+//                - for (var i in config.selectionScope.options)
+//                  - var e = config.selectionScope.options[i]
+//                  option(value=e[0])=e[1]
