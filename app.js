@@ -128,6 +128,11 @@ function getSeriesData (vname, selectedOptions, next) {
     console.log("baz");
     console.log(c.cmd);
 
+    csv.stdout.on('data', function (data) {
+      console.log('stdout: ' + data);
+      console.log('buz');
+    });
+
     new lazy(csv.stdout).lines.map(String).map(function (line){
       return line.split(',');
     }).join(function (results) {
