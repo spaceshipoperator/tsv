@@ -4,8 +4,6 @@ p
 - if (chartType == 1)
   script(src='/javascripts/tsv.js')
 - else if (chartType == 2)
-  script(src='/javascripts/bmc.js')
-- else if (chartType == 3)
   script(src='/javascripts/spb.js')
 - if (typeof(series) != null)
   != "<script type='text/javascript'> "
@@ -72,10 +70,9 @@ div#settings
           fieldset
             legend chart type
             p
-              select(name="formOptions[chartType]", size=3)
-                option(value=1) line chart
-                option(value=2) motion chart
-                option(value=3) scatterplot
+              select(name="formOptions[chartType]", size=2)
+                option(value=1) run chart
+                option(value=2) scatterplot
     p.buttons
       input(type="submit", value="Go")
 //        td
