@@ -94,17 +94,24 @@ function plotSeries(series, config) {
     .text(sYScale.tickFormat(10));
 
   // clean up what follows
+  series = series.sort(function(p,n) {
+    var r = 0;  
+    if (p.seriesKey < n.seriesKey)
+      r = -1;
+    if (p.seriesKey > n.seriesKey)
+      r = 1;
+    return r;
+  });
+
   var a = series.map(function() {return 0;});
   
   var t = [];
 
-  // todo: omit data points where wait is 0 and patients waiting is 0, just noise on the graph
   series.map(function(e,i){
     e.data.map(function(o){
       a[i] = a[i] + o.yRight_2;
       o.i = i;
       o.a = a[i];
-      // may not need this
       o.v = true;
       if (o.yLeft_1 > 0  && o.yRight_1 > 0) {
         t.push(o);
@@ -112,15 +119,14 @@ function plotSeries(series, config) {
     });
   });
 
-  function compare(a,b) {
-    if (a.x < b.x)
-       return -1;
-    if (a.x > b.x)
-      return 1;
-    return 0;
-  }
-
-  var data = t.sort(compare);
+  var data = t.sort(function(p,n) {
+    var r = 0;
+    if (p.x < n.x)
+       r = -1;
+    if (p.x > n.x)
+      r = 1;
+    return r;
+  });
 
   // plot the initial set of circles
   var circle = svg.selectAll("circle")
