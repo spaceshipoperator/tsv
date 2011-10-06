@@ -17,7 +17,6 @@ function plotData(o,b,c) {
   var w = 800,
     h = 175,
     p = 30,
-    t = o['seriesName'].replace(/"/g,''),
     xb = b['seriesMin']['x'],
     xt = b['seriesMax']['x'],
 
@@ -27,8 +26,6 @@ function plotData(o,b,c) {
     yrb = b['seriesMin']['yRight'],
     yrt = b['seriesMax']['yRight'],
 
-    sa = 0,
-
     xl = c['xLabels']['value'].split(','),
 
     xs = d3.scale.linear().domain([xb, xt]).range([0, w]),
@@ -36,6 +33,9 @@ function plotData(o,b,c) {
     yrs = d3.scale.linear().domain([yrb, yrt]).range([h, 0]),
 
     xls = d3.scale.ordinal().domain(xl).rangePoints([0, w]),
+
+    t = o['seriesName'].replace(/"/g,''),
+    sa = 0,
 
     data = o.data;
 
@@ -100,7 +100,7 @@ function plotData(o,b,c) {
   var vrules = vis.selectAll("g.vrule")
     .data(xl)
     .enter().append("svg:g")
-    .attr("class", "vrule");
+    .attr("class", "rule");
 
   vrules.append("svg:line")
     .attr("x1", xls)
@@ -139,7 +139,7 @@ function plotData(o,b,c) {
   var hrrules = vis.selectAll("g.hrrule")
     .data(yrs.ticks(5))
     .enter().append("svg:g")
-    .attr("class", "hrule");
+    .attr("class", "hrrule");
 
   hrrules.append("svg:line")
     //.attr("class", function(d) { return d ? null : "axis"; })

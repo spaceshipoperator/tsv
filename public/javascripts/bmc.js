@@ -9,8 +9,8 @@ Array.min = function( array ){
 function plotSeries(series,config) {
   var b = series.pop(), 
     data = [], 
-    w = 800,
-    h = 300,
+    w = 640,
+    h = 400,
     p = 30,
 
     // timeframe bottom and top
@@ -58,7 +58,7 @@ function plotSeries(series,config) {
   var vrules = svg.selectAll("g.vrule")
     .data(x.ticks(20))
     .enter().append("svg:g")
-    .attr("class", "vrule");
+    .attr("class", "rule");
 
   vrules.append("svg:line")
     .attr("x1", x)
@@ -77,7 +77,7 @@ function plotSeries(series,config) {
   var hlrules = svg.selectAll("g.hlrule")
     .data(y.ticks(20))
     .enter().append("svg:g")
-    .attr("class", "hlrule");
+    .attr("class", "rule");
 
   hlrules.append("svg:line")
     .attr("y1", y)

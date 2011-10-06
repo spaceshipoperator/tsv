@@ -7,12 +7,12 @@ a {
   color: #00B7FF;
 }
 
-.vrule line {
+.rule line {
   stroke: #eee;
   shape-rendering: crispEdges;
 }
 
-.vrule line.axis {
+.rule line.axis {
   stroke: #000;
 }
 
@@ -22,15 +22,6 @@ a {
 }
 
 .hlrule line.axis {
-  stroke: #000;
-}
-
-.hrrule line {
-  stroke: #eee;
-  shape-rendering: crispEdges;
-}
-
-.hrrule line.axis {
   stroke: #000;
 }
 
