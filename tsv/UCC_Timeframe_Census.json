@@ -1,9 +1,9 @@
 {
   "name": "UCC Timeframe Census",
-  "fromDate":{
-    "label": "from date: ",
+  "untilDate":{
+    "label": "as of date: ",
     "isModifiable": true,
-    "default": { "value": "2011-08-29" },
+    "default": { "function": "yesterdayStr()" },
     "minimum": { "value": "2010-01-01" }
   },
   "series":{
@@ -20,16 +20,6 @@
       [ 70448, "Westgate UCC" ]
     ],
     "default": { "value": "30148,30348,30401,70248,70348,70448,70548,70648" }
-  },
-  "selectionScope" : {
-    "label" : "specify date range",
-    "multiple" : false,
-    "options": [
-      [ 1, "Selected Date Only" ],
-      [ 2, "Work Week Of Selected Date" ],
-      [ 3, "5 Weeks Of Selected Weekday" ]
-    ],
-    "default": { "value": "1" }
   },
   "xLabels": {
       "value": "6:40a,9:10a,11:40a,2:10p,4:40p,7:10p,9:40p"
@@ -52,5 +42,5 @@
     ],
     "default": { "value": "1" }
   },
-  "cmd": "exec edw.UCC.TimeframeCensusTS ~fromDate, ~series, ~selectionScope;"
+  "cmd": "exec edw.UCC.TimeframeCensusTS ~untilDate, ~series, 1;"
 }

@@ -12,7 +12,7 @@ function plotSeries(series, config) {
     bounds = series.pop(), 
 
     // extracting the date for display
-    dateParts = config.fromDate.value.split('-').map(Number),
+    dateParts = config.untilDate.value.split('-').map(Number),
     dateString = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]).toDateString(),
 
     // padding for the graphics
