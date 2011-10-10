@@ -60,6 +60,13 @@ var daysAfter = function(d,n) {
   return dateToStr(e);
 };
 
+var yesterdayStr = function() {
+  var t = new Date(),
+    y = new Date(t - od);
+
+  return dateToStr(y);
+};
+
 /* 
 var startOfWeek = function(d) {
   var t = d || new Date();  
@@ -86,7 +93,7 @@ function getSeriesConfig(vname, selectedOptions, next) {
   fs.readFile("./tsv/" + vname + ".json", function(err,buffer) {
     var c = JSON.parse(buffer),
       // create this array based on those that have "default" eh?
-      b = ['fromDate','series','selectionScope'];
+      b = ['untilDate','series'];
 
     for (var i in b) {
       var k = b[i],
