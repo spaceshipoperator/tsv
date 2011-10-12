@@ -111,16 +111,26 @@ function plotSeries(series, config) {
     return r;
   });
   
+  var invisibleCircles = [];
+
   function toggleVisible(di) {
     var selectedCircles = svg.selectAll(".circle" + di),
       selectedRects = svg.selectAll(".rect" + di), 
-      newRectFill = "";
+      newRectFill = "",
+      makeVisible = invisibleCircles.indexOf(di);
+
+    if (makeVisible != -1) {
+      invisibleCircles.splice(makeVisible,1);
+    } else {
+      invisibleCircles.push(di);
+    }
 
     selectedCircles.attr("opacity", function(d,i) {
       var newOpacity;
+      
       d.v = (d.v == true ? false : true);
       if (d.v) {
-        newOpacity = .4;
+        newOpacity = .3;
         newRectFill = sColors(d.i);
       } else {
         newOpacity = 0;  
@@ -147,7 +157,7 @@ function plotSeries(series, config) {
           a[i] = a[i] + o.yRight_2;
           o.i = i;
           o.a = a[i];
-          o.v = true;
+          o.v = (invisibleCircles.indexOf(i) == -1) ? true : false;
           t.push(o);
         }
       });
@@ -168,7 +178,13 @@ function plotSeries(series, config) {
       .enter().append("svg:circle")
       .attr("class", function(d,i) { return "circle" + d.i; })
       .attr("fill", function(d,i) {return sColors(d.i);})
-      .attr("opacity", .30)
+      .attr("opacity", function(d,i) {
+        var o = .3;
+        if (invisibleCircles.indexOf(d.i) != -1) {
+          o = 0; 
+        }
+        return o;
+      })
       .attr("cx", function(d,i) {return sXScale(d.x);})
       .attr("cy", function(d,i) {return sYScale(d.yLeft_1);})
       .attr("r", function(d,i) {return sRScale(4 + (d.yRight_1 * 2));});
@@ -195,7 +211,13 @@ function plotSeries(series, config) {
     bars.append("svg:rect")
       .attr("class", function(d,i) {return "rect" + i;})
       .attr("stroke", function(d,i) {return sColors(i);})
-      .attr("fill", function(d,i) { return sColors(i); })
+      .attr("fill", function(d,i) { 
+        var f = sColors(i);
+        if (invisibleCircles.indexOf(i) != -1) {
+          f = "none"; 
+        }
+        return f;
+      })
       .attr("width",  function(d,i) { return bXScale(d); })
       .attr("height", bYScale.rangeBand());
   
@@ -224,8 +246,14 @@ function plotSeries(series, config) {
   d3.select(window).on("keydown", function() {
     //alert(d3.event.keyCode);
     switch (d3.event.keyCode) {
+      // left 
       case 37: selectedDate = new Date(selectedDate.getTime() - od) ; break;
+      // right 
       case 39: selectedDate = new Date(selectedDate.getTime() + od) ; break;
+      // up
+      case 38: selectedDate = new Date(selectedDate.getTime() - (7*od)) ; break;
+      // down
+      case 40: selectedDate = new Date(selectedDate.getTime() + (7*od)) ; break;
     }
     clearPlot();
     plotDay();
