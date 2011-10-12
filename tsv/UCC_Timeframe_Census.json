@@ -42,5 +42,5 @@
     ],
     "default": { "value": "1" }
   },
-  "cmd": "exec edw.UCC.TimeframeCensusTS ~asOfDate, ~series, 1;"
+  "cmd": "exec edw.UCC.TimeframeCensusTS ~asOfDate, ~series, 35;"
 }
