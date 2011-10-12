@@ -1,5 +1,3 @@
-var od = 1000*60*60*24; 
-
 Array.max = function( array ){
     return Math.max.apply( Math, array );
 };
@@ -7,6 +5,8 @@ Array.max = function( array ){
 Array.min = function( array ){
     return Math.min.apply( Math, array );
 };
+
+var od = 1000*60*60*24; 
 
 var dateToStr = function (d) {
   var y = d.getFullYear().toString(),
@@ -48,7 +48,7 @@ function plotSeries(series, config) {
 
     sColors = d3.scale.category10(),
 
-    // extracting the date for display
+    // extract the date for display and to filter the data
     dateParts = config.asOfDate.value.split('-').map(Number),
     selectedDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]),
 
