@@ -1,6 +1,6 @@
 function plotSeries(s,c) {
   var b = s.pop(), 
-    a = c.untilDate.value.split('-').map(Number),
+    a = c.asOfDate.value.split('-').map(Number),
     d = new Date(a[0], a[1] - 1, a[2]);
 
   d3.select("body")

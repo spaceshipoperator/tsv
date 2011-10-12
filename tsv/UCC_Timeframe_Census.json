@@ -1,6 +1,6 @@
 {
   "name": "UCC Timeframe Census",
-  "untilDate":{
+  "asOfDate":{
     "label": "as of date: ",
     "isModifiable": true,
     "default": { "function": "yesterdayStr()" },
@@ -42,5 +42,5 @@
     ],
     "default": { "value": "1" }
   },
-  "cmd": "exec edw.UCC.TimeframeCensusTS ~untilDate, ~series, 1;"
+  "cmd": "exec edw.UCC.TimeframeCensusTS ~asOfDate, ~series, 1;"
 }

@@ -60,6 +60,12 @@ var daysAfter = function(d,n) {
   return dateToStr(e);
 };
 
+var todayStr = function() {
+  var t = new Date();
+
+  return dateToStr(t);
+};
+
 var yesterdayStr = function() {
   var t = new Date(),
     y = new Date(t - od);
@@ -93,7 +99,7 @@ function getSeriesConfig(vname, selectedOptions, next) {
   fs.readFile("./tsv/" + vname + ".json", function(err,buffer) {
     var c = JSON.parse(buffer),
       // create this array based on those that have "default" eh?
-      b = ['untilDate','series'];
+      b = ['asOfDate','series'];
 
     for (var i in b) {
       var k = b[i],
@@ -299,7 +305,7 @@ app.get('/vis/:vname', function(req, res){
     console.log('bar');
     console.log(config);
     console.log('boo');
-    //console.log(s[0]['data'].slice(0,5));
+    console.log(s[0]['data'].slice(0,5));
 
     res.render('vis', {
       chartType: 1,
