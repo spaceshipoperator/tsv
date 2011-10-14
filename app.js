@@ -300,7 +300,8 @@ app.get('/vis/:vname', function(req, res){
   buildSeries(vname, selectedOptions, function(s) {
     fs.writeFile("series.json",JSON.stringify(s));
 
-    var config = s.shift();
+    var config = s.shift(),
+      bounds = s.pop();
 
     console.log('bar');
     console.log(config);
@@ -308,9 +309,10 @@ app.get('/vis/:vname', function(req, res){
     console.log(s[0]['data'].slice(0,5));
 
     res.render('vis', {
-      chartType: 1,
+      series: s,
       config: config,
-      series: s
+      bounds: bounds,
+      chartType: 1
     });
   });
 });
@@ -323,12 +325,14 @@ app.post('/vis/:vname', function(req, res){
   console.log(selectedOptions);
 
   buildSeries(vname, selectedOptions, function(s) {
-    var config = s.shift();
+    var config = s.shift(),
+      bounds = s.pop();
 
     res.render('vis', {
-      chartType: selectedOptions['chartType'],
+      series: s,
       config: config,
-      series: s
+      bounds: bounds,
+      chartType: selectedOptions['chartType']
     });
   });
 });

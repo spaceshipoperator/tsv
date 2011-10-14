@@ -1,25 +1,5 @@
-Array.max = function( array ){
-    return Math.max.apply( Math, array );
-};
-
-Array.min = function( array ){
-    return Math.min.apply( Math, array );
-};
-
-var od = 1000*60*60*24; 
-
-var dateToStr = function (d) {
-  var y = d.getFullYear().toString(),
-    m = '0' + (d.getMonth() +1).toString(),
-    s = '0' + d.getDate().toString();
-    return y + '-' + m.substring(m.length - 2) + '-' + s.substring(s.length - 2);
-};
-
-function plotSeries(series, config) {
+function showScatterplot(series, config, bounds) {
   var 
-    // series boundaries
-    bounds = series.pop(), 
-
     // padding for the graphics
     padding = 20,
 
@@ -142,8 +122,17 @@ function plotSeries(series, config) {
     selectedRects.attr("fill", newRectFill);
   }
 
+  function clearPlot() {
+    svg.selectAll("circle").remove();  
+    svg.selectAll("g.barLabels").remove();
+    svg.selectAll("g.bar").remove();
+    svg.selectAll(".barText").remove();
+    svg.selectAll("rect").remove();
+  }
+    
   // throwing this in a function so we can call it for each day
   function plotDay() {
+    clearPlot();
     sTitle.text(selectedDate.toDateString());
 
     // clean up what follows
@@ -230,33 +219,7 @@ function plotSeries(series, config) {
       .attr("fill", "white")
       .attr("text-anchor", "end")
       .text(bXScale.tickFormat(10));
-        
   }
 
-  function clearPlot() {
-    svg.selectAll("circle").remove();  
-    svg.selectAll("g.barLabels").remove();
-    svg.selectAll("g.bar").remove();
-    svg.selectAll(".barText").remove();
-    svg.selectAll("rect").remove();
-  }
-    
   plotDay();
-
-  d3.select(window).on("keydown", function() {
-    //alert(d3.event.keyCode);
-    switch (d3.event.keyCode) {
-      // left 
-      case 37: selectedDate = new Date(selectedDate.getTime() - od) ; break;
-      // right 
-      case 39: selectedDate = new Date(selectedDate.getTime() + od) ; break;
-      // up
-      case 38: selectedDate = new Date(selectedDate.getTime() - (7*od)) ; break;
-      // down
-      case 40: selectedDate = new Date(selectedDate.getTime() + (7*od)) ; break;
-    }
-    clearPlot();
-    plotDay();
-  });
-
 }

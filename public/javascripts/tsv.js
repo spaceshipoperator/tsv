@@ -1,3 +1,4 @@
+/*
 var od = 1000*60*60*24; 
 
 var dateToStr = function (d) {
@@ -6,16 +7,23 @@ var dateToStr = function (d) {
     s = '0' + d.getDate().toString();
     return y + '-' + m.substring(m.length - 2) + '-' + s.substring(s.length - 2);
 };
+*/
 
-function plotSeries(s,c) {
-  var b = s.pop(), 
-    a = c.asOfDate.value.split('-').map(Number),
+function showRunChart(s,c,b) {
+  var a = c.asOfDate.value.split('-').map(Number),
     selectedDate = new Date(a[0], a[1] - 1, a[2]);
 
-  d3.select("body")
-    .append("h3")
-    .text(selectedDate.toDateString())
-    .attr("align", "center");
+  function clearPlot() {
+    d3.selectAll("svg").remove();  
+    d3.selectAll(".vtitle").remove();  
+    d3.selectAll("hr").remove();  
+    d3.selectAll("h3").remove();  
+
+    d3.select("body")
+      .append("h3")
+      .text(selectedDate.toDateString())
+      .attr("align", "center");
+  }
 
   function plotData(o,b,c) {
     var w = 800,
@@ -150,39 +158,9 @@ function plotSeries(s,c) {
     
     };
 
-  function clearPlot() {
-    d3.selectAll("svg").remove();  
-    d3.selectAll(".vtitle").remove();  
-    d3.selectAll("hr").remove();  
-    d3.selectAll("h3").remove();  
-  }
-
+  clearPlot();
   for (var o in s) {
     plotData(s[o],b,c);
   }
-
-  d3.select(window).on("keydown", function() {
-    //alert(d3.event.keyCode);
-    switch (d3.event.keyCode) {
-      // left 
-      case 37: selectedDate = new Date(selectedDate.getTime() - od) ; break;
-      // right 
-      case 39: selectedDate = new Date(selectedDate.getTime() + od) ; break;
-      // up
-      case 38: selectedDate = new Date(selectedDate.getTime() - (7*od)) ; break;
-      // down
-      case 40: selectedDate = new Date(selectedDate.getTime() + (7*od)) ; break;
-    }
-    clearPlot();
-
-    d3.select("body")
-      .append("h3")
-      .text(selectedDate.toDateString())
-      .attr("align", "center");
-
-    for (var o in s) {
-      plotData(s[o],b,c);
-    }
-  });
 
 }

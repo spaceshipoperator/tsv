@@ -1,16 +1,16 @@
-h1= config.name
+h1#title= config.name
 // http://stackoverflow.com/questions/6270832/jade-express-iterating-over-object-in-inline-js-code-client-side
 p
-- if (chartType == 1)
-  script(src='/javascripts/tsv.js')
-- else if (chartType == 2)
   script(src='/javascripts/spb.js')
+  script(src='/javascripts/tsv.js')
+  script(src='/javascripts/nav.js')
 - if (typeof(series) != null)
   != "<script type='text/javascript'> "
   != "function initData() { "
   != "  var s = " + JSON.stringify(series) + "; "
   != "  var c = " + JSON.stringify(config) + "; "
-  != "  plotSeries(s,c); "
+  != "  var b = " + JSON.stringify(bounds) + "; "
+  != "  showCharts(s,c,b); "
   != "}"
   != "</script>"
 
@@ -36,12 +36,12 @@ script
     });
 
     $('#settings').hide();
-    $('#displayText').click(function(){
+    $('#title').click(function(){
       $('#settings').animate({"height": "toggle"}, { duration: 500 }); 
     }); 
   });
 
-a#displayText(href="#", align="right") configure
+//a#displayText(href="#", align="right") configure
 
 body(onload="initData()", style="font-size:62.5%;")
 
