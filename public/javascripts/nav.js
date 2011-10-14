@@ -1,5 +1,3 @@
-// hacky little script to cull out the navigation from each chart script
-// manipulates the config based on key press and then calls initData again
 Array.max = function( array ){
     return Math.max.apply( Math, array );
 };

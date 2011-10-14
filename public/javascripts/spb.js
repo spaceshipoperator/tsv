@@ -91,36 +91,6 @@ function showScatterplot(series, config, bounds) {
     return r;
   });
   
-  var invisibleCircles = [];
-
-  function toggleVisible(di) {
-    var selectedCircles = svg.selectAll(".circle" + di),
-      selectedRects = svg.selectAll(".rect" + di), 
-      newRectFill = "",
-      makeVisible = invisibleCircles.indexOf(di);
-
-    if (makeVisible != -1) {
-      invisibleCircles.splice(makeVisible,1);
-    } else {
-      invisibleCircles.push(di);
-    }
-
-    selectedCircles.attr("opacity", function(d,i) {
-      var newOpacity;
-      
-      d.v = (d.v == true ? false : true);
-      if (d.v) {
-        newOpacity = .3;
-        newRectFill = sColors(d.i);
-      } else {
-        newOpacity = 0;  
-        newRectFill = "none";
-      }
-      return newOpacity;
-    });
-
-    selectedRects.attr("fill", newRectFill);
-  }
 
   function clearPlot() {
     svg.selectAll("circle").remove();  
@@ -222,4 +192,35 @@ function showScatterplot(series, config, bounds) {
   }
 
   plotDay();
+}
+
+var invisibleCircles = [];
+
+function toggleVisible(di) {
+  var selectedCircles = d3.selectAll(".circle" + di),
+    selectedRects = d3.selectAll(".rect" + di), 
+    makeVisible = invisibleCircles.indexOf(di);
+
+  if (makeVisible != -1) {
+    invisibleCircles.splice(makeVisible,1);
+  } else {
+    invisibleCircles.push(di);
+  }
+
+  var newOpacity;
+  selectedCircles.attr("opacity", function(d,i) {
+    d.v = (d.v == true ? false : true);
+    if (d.v) {
+      newOpacity = .3;
+    } else {
+      newOpacity = 0;  
+    }
+    return newOpacity;
+  });
+
+  selectedRects.attr("fill", function(d,i) {
+    // prolly a better way to do this
+    var r = (newOpacity == 0 ? "none" : this.attributes[1].value);
+    return r;
+  });
 }
