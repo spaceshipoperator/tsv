@@ -11,18 +11,43 @@ var dateToStr = function (d) {
 
 function showRunChart(s,c,b) {
   var a = c.asOfDate.value.split('-').map(Number),
-    selectedDate = new Date(a[0], a[1] - 1, a[2]);
+    selectedDate = new Date(a[0], a[1] - 1, a[2]),
+    showRunChart = false;
+
+  function showHideChart() {
+    showRunChart = (showRunChart ? false : true);
+
+    if (showRunChart) {
+      d3.select("#runchart")
+        .attr("style", "display: block");
+      d3.select(".splot")
+        .attr("style", "display: none");
+    } else {
+      d3.select("#runchart")
+        .attr("style", "display: none");
+      d3.select(".splot")
+        .attr("style", "display: block");
+    }
+  }
 
   function clearPlot() {
+    d3.selectAll("circle").remove();  
     d3.selectAll("svg").remove();  
     d3.selectAll(".vtitle").remove();  
     d3.selectAll("hr").remove();  
     d3.selectAll("h3").remove();  
+    d3.select("#runchart").remove();  
+
+    d3.select("#ctitle")
+      .append("h3")
+      .attr("align", "center")
+      .text(selectedDate.toDateString())
+      .on("click", showHideChart);
 
     d3.select("body")
-      .append("h3")
-      .text(selectedDate.toDateString())
-      .attr("align", "center");
+      .append("div")
+      .attr("id", "runchart")
+      .attr("style", "display: none");
   }
 
   function plotData(o,b,c) {
@@ -51,14 +76,14 @@ function showRunChart(s,c,b) {
   
       data = o.data.filter(function(e) { return (e.xTime.split(' ')[0] == dateToStr(selectedDate)); });
   
-    var title = d3.select("body")
+    var title = d3.select("#runchart")
       .attr("class", "vtitle")
       .append("hr")
       .append("h3")
       .text("")
       .attr("align", "center");
   
-    var vis = d3.select("body")
+    var vis = d3.select("#runchart")
       .attr("class", "vis")
       .data([data])
       .append("svg:svg")
@@ -154,9 +179,9 @@ function showRunChart(s,c,b) {
       .attr("text-anchor", "start")
       .text(yrs.tickFormat(10));
     
-      d3.select("body").append("p").append("p");
+    d3.select("#runchart").append("p").append("p");
     
-    };
+  };
 
   clearPlot();
   for (var o in s) {

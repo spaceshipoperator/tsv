@@ -32,13 +32,9 @@ function showScatterplot(series, config, bounds) {
     dateParts = config.asOfDate.value.split('-').map(Number),
     selectedDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]),
 
-    sTitle = d3.select("body")
-      .append("h3")
-      .text(selectedDate.toDateString())
-      .attr("align", "center"),
-
     svg = d3.select("body")
       .append("svg:svg")
+      .attr("class", "splot")
       // may append the width of the bar graph too
       .attr("width", sWidth + bWidth + padding * 4)
       .attr("height", sHeight + padding * 2)
@@ -82,29 +78,26 @@ function showScatterplot(series, config, bounds) {
     .attr("text-anchor", "end")
     .text(sYScale.tickFormat(10));
 
-  series = series.sort(function(p,n) {
-    var r = 0;  
-    if (p.seriesKey < n.seriesKey)
-      r = -1;
-    if (p.seriesKey > n.seriesKey)
-      r = 1;
-    return r;
-  });
-  
-
   function clearPlot() {
-    svg.selectAll("circle").remove();  
-    svg.selectAll("g.barLabels").remove();
-    svg.selectAll("g.bar").remove();
-    svg.selectAll(".barText").remove();
-    svg.selectAll("rect").remove();
+    d3.selectAll("g.barLabels").remove();
+    d3.selectAll("g.bar").remove();
+    d3.selectAll(".barText").remove();
+    d3.selectAll("rect").remove();
   }
     
   // throwing this in a function so we can call it for each day
   function plotDay() {
     clearPlot();
-    sTitle.text(selectedDate.toDateString());
 
+    series = series.sort(function(p,n) {
+      var r = 0;  
+      if (p.seriesKey < n.seriesKey)
+        r = -1;
+      if (p.seriesKey > n.seriesKey)
+        r = 1;
+      return r;
+    });
+  
     // clean up what follows
     var a = series.map(function() {return 0;});
     
