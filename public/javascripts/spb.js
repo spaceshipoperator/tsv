@@ -1,3 +1,5 @@
+var sColors = d3.scale.category10();
+
 function showScatterplot(series, config, bounds) {
   var 
     // padding for the graphics
@@ -25,8 +27,6 @@ function showScatterplot(series, config, bounds) {
 
     sXLabels = config['xLabels']['value'].split(','),
     sXLScale = d3.scale.ordinal().domain(sXLabels).rangePoints([0, sWidth]),
-
-    sColors = d3.scale.category10(),
 
     // extract the date for display and to filter the data
     dateParts = config.asOfDate.value.split('-').map(Number),
