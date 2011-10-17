@@ -227,10 +227,10 @@ function buildSeries (vname, selectedOptions, next) {
       // this limits to 4 options on left or right y axis
       // could be a little more dynamo here
       for (var e = 1; e < 4; e++) {
-        ylt.push(t[d]['dataMax']['yLeft_' + e]);
+        ylt.push(t[d]['dataMax']['yLeft_1']);
         yrt.push(t[d]['dataMax']['yRight_' + e]);
   
-        ylb.push(t[d]['dataMin']['yLeft_' + e]);
+        ylb.push(t[d]['dataMin']['yLeft_1']);
         yrb.push(t[d]['dataMin']['yRight_' + e]);
       }
     }
