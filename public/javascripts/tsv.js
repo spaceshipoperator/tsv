@@ -11,24 +11,7 @@ var dateToStr = function (d) {
 
 function showRunChart(s,c,b) {
   var a = c.asOfDate.value.split('-').map(Number),
-    selectedDate = new Date(a[0], a[1] - 1, a[2]),
-    showRunChart = false;
-
-  function showHideChart() {
-    showRunChart = (showRunChart ? false : true);
-
-    if (showRunChart) {
-      d3.select("#runchart")
-        .attr("style", "display: block");
-      d3.select(".splot")
-        .attr("style", "display: none");
-    } else {
-      d3.select("#runchart")
-        .attr("style", "display: none");
-      d3.select(".splot")
-        .attr("style", "display: block");
-    }
-  }
+    selectedDate = new Date(a[0], a[1] - 1, a[2]);
 
   function clearPlot() {
     d3.selectAll("circle").remove();  
@@ -42,7 +25,7 @@ function showRunChart(s,c,b) {
       .append("h3")
       .attr("align", "center")
       .text(selectedDate.toDateString())
-      .on("click", showHideChart);
+      .on("click", toggleChart);
 
     d3.select("body")
       .append("div")

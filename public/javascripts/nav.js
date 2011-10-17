@@ -35,25 +35,30 @@ var dateParts = c.asOfDate.value.split('-').map(Number),
     c.asOfDate.value = dateToStr(selectedDate);
     showRunChart(s,c,b);
     showScatterplot(s,c,b);
+    showHideChart();
   });
   showRunChart(s,c,b);
   showScatterplot(s,c,b);
+  showHideChart();
 }
 
+var showRC = false;
 
+function toggleChart() {
+  showRC = (showRC ? false : true);
+  showHideChart();
+}
 
-
-
-
-//  d3.select(window).on("keydown", function() {
-    //alert(d3.event.keyCode);
-//    switch (d3.event.keyCode) {
-      // left 
-//      case 37: selectedDate = new Date(selectedDate.getTime() - od) ; break;
-      // right 
-//      case 39: selectedDate = new Date(selectedDate.getTime() + od) ; break;
-      // up
-//      case 38: selectedDate = new Date(selectedDate.getTime() - (7*od)) ; break;
-      // down
-//      case 40: selectedDate = new Date(selectedDate.getTime() + (7*od)) ; break;
-//    }
+function showHideChart() {
+  if (showRC) {
+    d3.select("#runchart")
+      .attr("style", "display: block");
+    d3.select(".splot")
+      .attr("style", "display: none");
+  } else {
+    d3.select("#runchart")
+      .attr("style", "display: none");
+    d3.select(".splot")
+      .attr("style", "display: block");
+  }
+}
