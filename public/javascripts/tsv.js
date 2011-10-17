@@ -55,23 +55,32 @@ function showRunChart(s,c,b) {
       xls = d3.scale.ordinal().domain(xl).rangePoints([0, w]),
   
       t = o['seriesName'].replace(/"/g,''),
+      k = o['seriesKey'],
       sa = 0,
   
       data = o.data.filter(function(e) { return (e.xTime.split(' ')[0] == dateToStr(selectedDate)); });
-  
+
     var title = d3.select("#runchart")
       .attr("class", "vtitle")
-      .append("hr")
       .append("h3")
       .text("")
-      .attr("align", "center");
+      .attr("align", "center")
+      .on("click", function(){ toggleRunChart(k); })
+      .append("hr");
   
     var vis = d3.select("#runchart")
-      .attr("class", "vis")
       .data([data])
       .append("svg:svg")
+      .attr("id", "rc" + k)
       .attr("width", w + p * 4)
       .attr("height", h + p * 2)
+      .attr("style", function() {
+        var rv = "display: none";
+        if (hiddenRunCharts.indexOf(k) == -1) {
+          rv = "display: block";
+        }
+        return rv;
+      })
       .append("svg:g")
       .attr("transform", "translate(" + p + "," + p + ")");
       
@@ -171,4 +180,22 @@ function showRunChart(s,c,b) {
     plotData(s[o],b,c);
   }
 
+}
+
+var hiddenRunCharts = [];
+
+function toggleRunChart(k) {
+  var ci = hiddenRunCharts.indexOf(k);
+  // if k is not in the hiddenRunCharts array,
+  // add it and set display to none
+  if (ci == -1) {
+    hiddenRunCharts.push(k);
+    d3.select("#rc" + k)
+      .attr("style", "display: none");
+  // otherwise, remove it and set display to block
+  } else {
+    hiddenRunCharts.splice(ci,1);
+    d3.select("#rc" + k)
+      .attr("style", "display: block");
+  }
 }
