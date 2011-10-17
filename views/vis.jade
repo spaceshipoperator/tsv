@@ -17,12 +17,9 @@ p
 script
   $('document').ready(function(){
     var f = '#{config.asOfDate.value}',
-      l = '#{config.series.value}'.split(','),
-      t = '#{chartType}';
+      l = '#{config.series.value}'.split(',');
 
     $('[name="formOptions[series]"]').val(l);
-
-    $('[name="formOptions[chartType]"]').val(t);
 
     $('#formOptionsFromDate').val(f);
 
@@ -61,13 +58,6 @@ div#settings
                 - for (var i in config.series.options)
                   - var e = config.series.options[i]
                   option(value=e[0])=e[1]
-        td
-          fieldset
-            legend chart type
-            p
-              select(name="formOptions[chartType]", size=2)
-                option(value=1) run chart
-                option(value=2) scatterplot
     p.buttons
       input(type="submit", value="Go")
 
