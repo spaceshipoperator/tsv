@@ -93,10 +93,12 @@ var endOfPreviousWeek = function(d) {
 };
 */
 
-function getSeriesConfig(vname, selectedOptions, next) {
+function getSeriesConfig(vtype, vname, selectedOptions, next) {
   var results = [];
 
-  fs.readFile("./tsv/" + vname + ".json", function(err,buffer) {
+  console.log("./config/" + vname + "." + vtype + ".json");
+
+  fs.readFile("./config/" + vname + "." + vtype + ".json", function(err,buffer) {
     var c = JSON.parse(buffer),
       // create this array based on those that have "default" eh?
       b = ['asOfDate','series'];
@@ -130,13 +132,14 @@ function getSeriesConfig(vname, selectedOptions, next) {
 
 }
 
-function getSeriesData (vname, selectedOptions, next) {
-  getSeriesConfig(vname, selectedOptions, function(data) {
+
+function getSeriesData (vtype, vname, selectedOptions, next) {
+  getSeriesConfig(vtype ,vname, selectedOptions, function(data) {
     var c = data.shift(),
       // todo: get rid of this ugliness calling a shell script here...
       // if we tuck it away in the config for now at least that gives us options 
       // for calling different stuff...still ugly I know
-      csv = spawn('./tsv/mssql.sh', [c.cmd]);
+      csv = spawn('./config/mssql.sh', [c.cmd]);
 
     console.log("baz");
     console.log(c.cmd);
@@ -155,8 +158,8 @@ function getSeriesData (vname, selectedOptions, next) {
   });
 };
 
-function buildSeries (vname, selectedOptions, next) {
-  getSeriesData(vname, selectedOptions, function(data) {
+function buildSeries (vtype, vname, selectedOptions, next) {
+  getSeriesData(vtype, vname, selectedOptions, function(data) {
     var q = data.shift(), // q for qonfig...hell, running out of letters for my alphabet soup
       header = data[0],
       t = [], // temporary array will have named indexes 
@@ -276,29 +279,32 @@ function buildSeries (vname, selectedOptions, next) {
 
 // Routes
 app.get('/', function(req, res){
-  var configs, wtf;
+  var configs;
   // http://howtonode.org/do-it-fast
-  fs.readdir("./tsv", function(err, files) {
+  fs.readdir("./config", function(err, files) {
     if (err) throw err;
     // http://www.hunlock.com/blogs/Mastering_Javascript_Arrays#quickIDX13
     configs = files.filter(isConfig).map(function(e){
-      return e.split(".")[0];
+      var ce = e.split(".");
+      return [ce[0],ce[1]];
     });
+    console.log(configs);
 
     res.render('index', {
-      title: 'tsv',
+      title: 'data driven',
       configs: configs
     });
   });
 });
 
-app.get('/vis/:vname', function(req, res){
+app.get('/vis/:vtype/:vname', function(req, res){
   var vname = req.params.vname,
+    vtype = req.params.vtype,
     selectedOptions; // undefined on a get
 
   // http://howtonode.org/control-flow
-  buildSeries(vname, selectedOptions, function(s) {
-    fs.writeFile("series.json",JSON.stringify(s));
+  buildSeries(vtype, vname, selectedOptions, function(s) {
+    //fs.writeFile("series.json",JSON.stringify(s));
 
     var config = s.shift(),
       bounds = s.pop();
@@ -308,7 +314,7 @@ app.get('/vis/:vname', function(req, res){
     console.log('boo');
     console.log(s[0]['data'].slice(0,5));
 
-    res.render('vis', {
+    res.render(vtype, {
       series: s,
       config: config,
       bounds: bounds,
@@ -317,22 +323,22 @@ app.get('/vis/:vname', function(req, res){
   });
 });
 
-app.post('/vis/:vname', function(req, res){
+app.post('/vis/:vtype/:vname', function(req, res){
   var vname = req.params.vname, 
+    vtype = req.params.vtype,
     selectedOptions = req.body.formOptions;
 
   console.log('foo');
   console.log(selectedOptions);
 
-  buildSeries(vname, selectedOptions, function(s) {
+  buildSeries(vtype, vname, selectedOptions, function(s) {
     var config = s.shift(),
       bounds = s.pop();
 
-    res.render('vis', {
+    res.render(vtype, {
       series: s,
       config: config,
-      bounds: bounds,
-      chartType: selectedOptions['chartType']
+      bounds: bounds
     });
   });
 });
