@@ -4,12 +4,12 @@ p
   script(src='/javascripts/spb.js')
   script(src='/javascripts/tsv.js')
   script(src='/javascripts/nav.js')
-- if (typeof(series) != null)
+- if (typeof(obj) != null)
   != "<script type='text/javascript'> "
   != "function initData() { "
-  != "  var s = " + JSON.stringify(series) + "; "
+  != "  var s = " + JSON.stringify(obj) + "; "
   != "  var c = " + JSON.stringify(config) + "; "
-  != "  var b = " + JSON.stringify(bounds) + "; "
+  != "  var b = s.pop(); "
   != "  showCharts(s,c,b); "
   != "}"
   != "</script>"

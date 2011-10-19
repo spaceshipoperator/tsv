@@ -1,0 +1,21 @@
+h1#title= config.name
+// http://stackoverflow.com/questions/6270832/jade-express-iterating-over-object-in-inline-js-code-client-side
+p
+  script(src='/javascripts/pdq.js')
+- if (typeof(obj) != null)
+  != "<script type='text/javascript'> "
+  != "function initData() { "
+  != "  var o = " + JSON.stringify(obj) + "; "
+  != "  var c = " + JSON.stringify(config) + "; "
+  != "  showTreemap(o,c); "
+  != "}"
+  != "</script>"
+
+body(onload="initData()", style="font-size:62.5%;")
+
+button#size Patient Count
+button#count Average Visit Duration
+
+p
+
+div#chart

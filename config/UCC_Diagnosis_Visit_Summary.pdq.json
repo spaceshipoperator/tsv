@@ -1,0 +1,50 @@
+{
+  "name": "UCC Diagnosis Visit Summary",
+  "asOfDate":{
+    "label": "as of date: ",
+    "isModifiable": true,
+    "default": { "value": "2011-01-01" },
+    "minimum": { "value": "2010-01-01" }
+  },
+  "series":{
+    "label": "departments: ",
+    "multiple" : true,
+    "options": [
+      [ 30401, "Auburn UCC" ],
+      [ 30148, "Covington UCC" ],
+      [ 70648, "Gig Harbor UCC" ],
+      [ 30348, "Kent UCC" ],
+      [ 70548, "Lakewood UCC" ],
+      [ 70248, "Spanaway UCC" ],
+      [ 70348, "University Place UCC" ],
+      [ 70448, "Westgate UCC" ]
+    ],
+    "default": { "value": "30148,30348,30401,70248,70348,70448,70548,70648" }
+  },
+  "filter": { 
+    "label" : "filter",
+    "options":[
+      [ 1, "common diagnosis" ],
+      [ 2, "uncommon diagnosis" ],
+      [ 3, "rare diagnosis" ]
+    ],
+    "default": { "value": "1" }
+  },
+  "color": { 
+    "label" : "color",
+    "options":[
+      [ 1, "department" ],
+      [ 2, "diagnosis" ]
+    ],
+    "default": { "value": "1" }
+  },
+  "size": { 
+    "label" : "size",
+    "options":[
+      [ 1, "patient count" ],
+      [ 2, "average visit duration" ]
+    ],
+    "default": { "value": "1" }
+  },
+  "cmd": "exec edw.UCC.DiagnosisVisitSummary ~asOfDate, ~series;"
+}

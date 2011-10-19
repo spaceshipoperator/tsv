@@ -93,10 +93,8 @@ var endOfPreviousWeek = function(d) {
 };
 */
 
-function getSeriesConfig(vtype, vname, selectedOptions, next) {
+function getConfig(vtype, vname, selectedOptions, next) {
   var results = [];
-
-  console.log("./config/" + vname + "." + vtype + ".json");
 
   fs.readFile("./config/" + vname + "." + vtype + ".json", function(err,buffer) {
     var c = JSON.parse(buffer),
@@ -132,9 +130,8 @@ function getSeriesConfig(vtype, vname, selectedOptions, next) {
 
 }
 
-
-function getSeriesData (vtype, vname, selectedOptions, next) {
-  getSeriesConfig(vtype ,vname, selectedOptions, function(data) {
+function getData (vtype, vname, selectedOptions, next) {
+  getConfig(vtype ,vname, selectedOptions, function(data) {
     var c = data.shift(),
       // todo: get rid of this ugliness calling a shell script here...
       // if we tuck it away in the config for now at least that gives us options 
@@ -144,10 +141,10 @@ function getSeriesData (vtype, vname, selectedOptions, next) {
     console.log("baz");
     console.log(c.cmd);
 
-    csv.stdout.on('data', function (data) {
-      console.log('stdout: ' + data);
-      console.log('buz');
-    });
+    //csv.stdout.on('data', function (data) {
+    //  console.log('stdout: ' + data);
+    //  console.log('buz');
+    //});
 
     new lazy(csv.stdout).lines.map(String).map(function (line){
       return line.split(',');
@@ -159,7 +156,7 @@ function getSeriesData (vtype, vname, selectedOptions, next) {
 };
 
 function buildSeries (vtype, vname, selectedOptions, next) {
-  getSeriesData(vtype, vname, selectedOptions, function(data) {
+  getData(vtype, vname, selectedOptions, function(data) {
     var q = data.shift(), // q for qonfig...hell, running out of letters for my alphabet soup
       header = data[0],
       t = [], // temporary array will have named indexes 
@@ -277,6 +274,29 @@ function buildSeries (vtype, vname, selectedOptions, next) {
   });
 };
 
+function buildPopulation (vtype, vname, selectedOptions, next) {
+  getData(vtype, vname, selectedOptions, function(data) {
+    console.log("buz");
+    fs.writeFile("population.json",JSON.stringify(data));
+    next(data);
+  });
+};
+
+function buildJSO (vtype, vname, selectedOptions, next) {
+  if (vtype == 'tsv') {
+    buildSeries(vtype, vname, selectedOptions, function(s) {
+      next(s);
+    });
+  }
+
+  if (vtype == 'pdq') {
+    buildPopulation(vtype, vname, selectedOptions, function(s) {
+      next(s);
+    });
+  }
+
+};
+
 // Routes
 app.get('/', function(req, res){
   var configs;
@@ -303,22 +323,12 @@ app.get('/vis/:vtype/:vname', function(req, res){
     selectedOptions; // undefined on a get
 
   // http://howtonode.org/control-flow
-  buildSeries(vtype, vname, selectedOptions, function(s) {
-    //fs.writeFile("series.json",JSON.stringify(s));
-
-    var config = s.shift(),
-      bounds = s.pop();
-
-    console.log('bar');
-    console.log(config);
-    console.log('boo');
-    console.log(s[0]['data'].slice(0,5));
+  buildJSO(vtype, vname, selectedOptions, function(o) {
+    var config = o.shift();
 
     res.render(vtype, {
-      series: s,
-      config: config,
-      bounds: bounds,
-      chartType: 1
+      obj: o,
+      config: config
     });
   });
 });
@@ -328,17 +338,12 @@ app.post('/vis/:vtype/:vname', function(req, res){
     vtype = req.params.vtype,
     selectedOptions = req.body.formOptions;
 
-  console.log('foo');
-  console.log(selectedOptions);
-
-  buildSeries(vtype, vname, selectedOptions, function(s) {
-    var config = s.shift(),
-      bounds = s.pop();
+  buildJSO(vtype, vname, selectedOptions, function(o) {
+    var config = o.shift();
 
     res.render(vtype, {
-      series: s,
-      config: config,
-      bounds: bounds
+      obj: o,
+      config: config
     });
   });
 });

@@ -30,3 +30,12 @@ a {
   stroke: steelblue;
   stroke-width: 1.5px;
 }
+
+.cell {
+  border: solid 1px white;
+  font: 10px sans-serif;
+  line-height: 12px;
+  overflow: hidden;
+  position: absolute;
+  text-indent: 2px;
+}
