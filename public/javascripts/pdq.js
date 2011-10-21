@@ -1,9 +1,9 @@
-function showTreemap(o,c,h) {
+var color = d3.scale.category20c();
+function showTreemap(o,c,columnNames) {
   var i = 0, // for loops
     j = 0, // nested for loops
     k = 0, // omg more nested loops
     l = 0, // for crying out loud already
-    columnNames = h, 
     primaryCategory = columnNames.indexOf('category_1'),
     secondaryCategory = columnNames.indexOf('category_2'),
     selectedFilter = columnNames.indexOf('filter_1'),
@@ -11,50 +11,7 @@ function showTreemap(o,c,h) {
     sizes = columnNames.filter(function(e){ return /^size_/.test(e); });
 
   var w = 900,
-      h = 450,
-      color = d3.scale.category20c();
-
-  // set the category
-  var primaryCategories = [];
-  for (i = 0; i < o.length; i++) {
-    var x = o[i][primaryCategory].replace(/"/g, '') ;
-    if (primaryCategories.indexOf(x) == -1) {
-      primaryCategories.push(x);
-    }
-  }
-
-  var secondaryCategories = [];
-  for (i = 0; i < o.length; i++) {
-    var x = o[i][secondaryCategory].replace(/"/g, '') ;
-    if (secondaryCategories.indexOf(x) == -1) {
-      secondaryCategories.push(x);
-    }
-  }
-
-  // filter the data
-  var json = {"name": "container", "children": []};
-  for (i = 0; i < primaryCategories.length; i++) {
-    var rec = {"name": primaryCategories[i], "children": []};
-    json["children"].push(rec);
-  };
-
-  for (i = 0; i < json["children"].length; i++) {
-    var pcat = json["children"][i]["name"];
-    for (j = 0; j < secondaryCategories.length; j++) {
-      var scat = secondaryCategories[j];
-      for (k = 0; k < o.length; k++) {
-        if ((o[k][selectedFilter] == '1') &&
-            (o[k][primaryCategory].replace(/"/g, '') == pcat) &&
-            (o[k][secondaryCategory].replace(/"/g, '') == scat)) {
-          var rec = { "name": scat };
-          for (l = 0; l < sizes.length; l++) {
-            rec[sizes[l]] = parseInt(o[k][columnNames.indexOf(sizes[l])]);
-          }
-          json["children"][i]["children"].push(rec);
-        }
-      }
-    }
-  };
+      h = 450;
 
   var treemap = d3.layout.treemap()
       .size([w, h])
@@ -66,43 +23,75 @@ function showTreemap(o,c,h) {
       .style("width", w + "px")
       .style("height", h + "px");
 
-//  d3.json(jsono, function(json) {
-    div.data([json]).selectAll("div")
-        .data(treemap.nodes)
+  var primaryCategories = [];
+  var secondaryCategories = [];
+  function setCategories(pc, sc) {
+    // set the category
+    for (i = 0; i < o.length; i++) {
+      var x = o[i][pc].replace(/"/g, '') ;
+      if (primaryCategories.indexOf(x) == -1) {
+        primaryCategories.push(x);
+      }
+    }
+    
+    for (i = 0; i < o.length; i++) {
+      var x = o[i][sc].replace(/"/g, '') ;
+      if (secondaryCategories.indexOf(x) == -1) {
+        secondaryCategories.push(x);
+      }
+    }
+  }
+
+  setCategories(primaryCategory, secondaryCategory);
+    
+    // filter the data
+  var json = {};
+
+  function filterJSON(sf){
+    json = {"name": "container", "children": []};
+    for (i = 0; i < primaryCategories.length; i++) {
+      var rec = {"name": primaryCategories[i], "children": []};
+      json["children"].push(rec);
+    };
+    
+    for (i = 0; i < json["children"].length; i++) {
+      var pcat = json["children"][i]["name"];
+      for (j = 0; j < secondaryCategories.length; j++) {
+        var scat = secondaryCategories[j];
+        for (k = 0; k < o.length; k++) {
+          if ((o[k][sf] == '1') &&
+              (o[k][primaryCategory].replace(/"/g, '') == pcat) &&
+              (o[k][secondaryCategory].replace(/"/g, '') == scat)) {
+            var rec = { "name": scat };
+            for (l = 0; l < sizes.length; l++) {
+              rec[sizes[l]] = parseInt(o[k][columnNames.indexOf(sizes[l])]);
+            }
+            json["children"][i]["children"].push(rec);
+          }
+        }
+      }
+    };
+  };
+    
+  filterJSON(selectedFilter); 
+
+  function fillTree(j) {
+    div.data([j]).selectAll("div")
+      .data(treemap.nodes)
       .enter().append("div")
-        .attr("class", "cell")
-        .style("background", function(d) { return d.children ? color(d.name) : null; })
-        .call(cell)
-        .text(function(d) { return d.children ? null : d.name; })
-        .on("mouseover", function() { 
-          this.style.borderWidth="3px";
-          this.style.borderColor="black"; })
-        .on("mouseout", function() { 
-          this.style.borderWidth="";
-          this.style.borderColor=""; });
+      .attr("class", "cell")
+      .style("background", function(d) { return d.children ? color(d.name) : null; })
+      .call(cell)
+      .text(function(d) { return d.children ? null : d.name; })
+      .on("mouseover", function() { 
+        this.style.borderWidth="3px";
+        this.style.borderColor="black"; })
+      .on("mouseout", function() { 
+        this.style.borderWidth="";
+        this.style.borderColor=""; });
+  }
 
-    d3.select("#size_1").on("click", function() {
-      div.selectAll("div")
-          .data(treemap.value(function(d) { return d[columnNames[selectedSize]]; }))
-        .transition()
-          .duration(1500)
-          .call(cell);
-    });
-
-//      d3.select("#size_1").classed("active", true);
-//      d3.select("#size_4").classed("active", false);
-
-    d3.select("#size_4").on("click", function() {
-      div.selectAll("div")
-          .data(treemap.value(function(d) { return d["size_4"]; }))
-        .transition()
-          .duration(1500)
-          .call(cell);
-  
-//      d3.select("#size_1").classed("active", false);
-//      d3.select("#size_4").classed("active", true);
-    });
-//  });
+  fillTree(json);
 
   function cell() {
     this
@@ -112,6 +101,36 @@ function showTreemap(o,c,h) {
       .style("height", function(d) { return d.dy - 1 + "px"; });
   }
 
+  d3.selectAll(".size").on("click", function() {
+    selectedSize = columnNames.indexOf(this.id);
+    div.selectAll("div")
+      .data(treemap.value(function(d) { return d[columnNames[selectedSize]]; }))
+      .transition()
+      .duration(1500)
+      .call(cell);
+  });
+
+  d3.selectAll(".filter").on("click", function() {
+    selectedFilter = columnNames.indexOf(this.id);
+    treemap.sticky(false);
+    div.selectAll("div").remove();
+    treemap.sticky(true);
+    filterJSON(selectedFilter);
+    fillTree(json);
+  });
+
+  d3.selectAll(".category").on("click", function() {
+    if (!(columnNames.indexOf(this.id) == primaryCategory)) {
+      secondaryCategory = primaryCategory;
+      primaryCategory = columnNames.indexOf(this.id);
+      treemap.sticky(false);
+      div.selectAll("div").remove();
+      treemap.sticky(true);
+      setCategories(primaryCategory, secondaryCategory);
+      filterJSON(selectedFilter);
+      fillTree(json);
+    }
+  });
 }
 
   // lets just hack it together so we can see some data real quick
