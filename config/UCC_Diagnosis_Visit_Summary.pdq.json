@@ -24,14 +24,15 @@
   "filter": { 
     "label" : "filter",
     "options":[
-      [ 1, "common diagnosis" ],
-      [ 2, "uncommon diagnosis" ],
-      [ 3, "rare diagnosis" ]
+      [ 1, "common" ],
+      [ 2, "occasional" ],
+      [ 3, "infrequent" ],
+      [ 4, "uncommon" ]
     ],
     "default": { "value": "1" }
   },
-  "color": { 
-    "label" : "color",
+  "category": { 
+    "label" : "category",
     "options":[
       [ 1, "department" ],
       [ 2, "diagnosis" ]
@@ -41,8 +42,10 @@
   "size": { 
     "label" : "size",
     "options":[
-      [ 1, "patient count" ],
-      [ 2, "average visit duration" ]
+      [ 1, "count check-in" ],
+      [ 2, "average wait time" ],
+      [ 3, "count after visit summary" ],
+      [ 4, "average visit duration" ]
     ],
     "default": { "value": "1" }
   },

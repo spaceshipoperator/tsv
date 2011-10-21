@@ -7,15 +7,44 @@ p
   != "function initData() { "
   != "  var o = " + JSON.stringify(obj) + "; "
   != "  var c = " + JSON.stringify(config) + "; "
-  != "  showTreemap(o,c); "
+  != "  var h = o.shift(); "
+  != "  showTreemap(o,c,h); "
   != "}"
   != "</script>"
 
-body(onload="initData()", style="font-size:62.5%;")
+script
+  $('document').ready(function(){
 
-button#size Patient Count
-button#count Average Visit Duration
+    var f = !{JSON.stringify(config.filter.options)},
+      c = !{JSON.stringify(config.category.options)},
+      s = !{JSON.stringify(config.size.options)} ;
+    
+    for (var i = 0; i < f.length; i++) {
+      var li = '<br/><a id="filter_' + f[i][0] + '" class="filter" href=#chart>' + f[i][1] + '</a>'
+      $('#filter').append(li);
+    }
 
-p
+    for (var j = 0; j < c.length; j++) {
+      var li = '<br/><a id="category_' + c[j][0] + '" class="category" href=#chart>' + c[j][1] + '</a>'
+      $('#category').append(li);
+    }
+
+    for (var k = 0; k < s.length; k++) {
+      var li = '<br/><a id="size_' + s[k][0] + '" class="size" href=#chart>' + s[k][1] + '</a>'
+      $('#size').append(li);
+    }
+
+    initData();
+  });
+
+body(style="font-size:62.5%;")
+  table#controls
+    tr(valign="top", align="left")
+      td(width="15%") 
+        h3#filter filter
+      td(width="15%") 
+        h3#category category
+      td(width="15%") 
+        h3#size size
 
 div#chart
