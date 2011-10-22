@@ -23,10 +23,11 @@ function showTreemap(o,c,columnNames) {
       .style("width", w + "px")
       .style("height", h + "px");
 
+  // set the category
   var primaryCategories = [];
   var secondaryCategories = [];
+
   function setCategories(pc, sc) {
-    // set the category
     for (i = 0; i < o.length; i++) {
       var x = o[i][pc].replace(/"/g, '') ;
       if (primaryCategories.indexOf(x) == -1) {
@@ -44,13 +45,13 @@ function showTreemap(o,c,columnNames) {
 
   setCategories(primaryCategory, secondaryCategory);
     
-    // filter the data
+  // filter the data
   var json = {};
 
   function filterJSON(sf){
-    json = {"name": "container", "children": []};
+    json = { "id": "c_x_x", "name": "container", "children": [] };
     for (i = 0; i < primaryCategories.length; i++) {
-      var rec = {"name": primaryCategories[i], "children": []};
+      var rec = { "id": "c_" + i + '_x', "name": primaryCategories[i], "children": [] };
       json["children"].push(rec);
     };
     
@@ -62,7 +63,7 @@ function showTreemap(o,c,columnNames) {
           if ((o[k][sf] == '1') &&
               (o[k][primaryCategory].replace(/"/g, '') == pcat) &&
               (o[k][secondaryCategory].replace(/"/g, '') == scat)) {
-            var rec = { "name": scat };
+            var rec = { "id": "c_" + i + '_' + k, "name": scat };
             for (l = 0; l < sizes.length; l++) {
               rec[sizes[l]] = parseInt(o[k][columnNames.indexOf(sizes[l])]);
             }
@@ -75,10 +76,14 @@ function showTreemap(o,c,columnNames) {
     
   filterJSON(selectedFilter); 
 
+  // set the id of each div to the primaryCategories index _ secondaryCategories index
+  // on click, display the primary and secondary category names below the chart
+
   function fillTree(j) {
     div.data([j]).selectAll("div")
       .data(treemap.nodes)
       .enter().append("div")
+      .attr("id", function(d) { return d.id; })
       .attr("class", "cell")
       .style("background", function(d) { return d.children ? color(d.name) : null; })
       .call(cell)
@@ -88,7 +93,9 @@ function showTreemap(o,c,columnNames) {
         this.style.borderColor="black"; })
       .on("mouseout", function() { 
         this.style.borderWidth="";
-        this.style.borderColor=""; });
+        this.style.borderColor=""; })
+      .on("click", function(d) { displayCats(this.id, d.name); });
+
   }
 
   fillTree(json);
@@ -101,7 +108,39 @@ function showTreemap(o,c,columnNames) {
       .style("height", function(d) { return d.dy - 1 + "px"; });
   }
 
+  
+  function displayCats(i,n) {
+    var pri = primaryCategories[i.split('_')[1]];
+    
+    d3.select('#pri')
+      .text(pri)
+      .style("background", function() { return color(pri); } );
+
+    d3.select("#sec")
+      .text(n)
+      .style("background", "#D8D8D8");
+  }
+
+  function clearCats() {
+    d3.select("#sec")
+      .text("")
+      .style("background", "none");
+
+    d3.select("#pri")
+      .text("")
+      .style("background", "none");
+  }
+
+  function setBG(c,i) {
+    d3.selectAll(c)
+      .style("background", "none");
+    d3.select('#' + i)
+      .style("background", "#F3F781");
+  }
+
+  // clear the background of all and set the background of the selected
   d3.selectAll(".size").on("click", function() {
+    setBG(".size", this.id);
     selectedSize = columnNames.indexOf(this.id);
     div.selectAll("div")
       .data(treemap.value(function(d) { return d[columnNames[selectedSize]]; }))
@@ -111,6 +150,8 @@ function showTreemap(o,c,columnNames) {
   });
 
   d3.selectAll(".filter").on("click", function() {
+    clearCats();
+    setBG(".filter", this.id);
     selectedFilter = columnNames.indexOf(this.id);
     treemap.sticky(false);
     div.selectAll("div").remove();
@@ -120,6 +161,8 @@ function showTreemap(o,c,columnNames) {
   });
 
   d3.selectAll(".category").on("click", function() {
+    clearCats();
+    setBG(".category", this.id);
     if (!(columnNames.indexOf(this.id) == primaryCategory)) {
       secondaryCategory = primaryCategory;
       primaryCategory = columnNames.indexOf(this.id);
@@ -132,22 +175,3 @@ function showTreemap(o,c,columnNames) {
     }
   });
 }
-
-  // lets just hack it together so we can see some data real quick
-  // promise I'll come back around real soon to clean things up
-
-  //var departments = [];
-  //for (var i = 0; i < o.length; i++) {
-  //  if (departments.indexOf(o[i][0]) == -1) {
-  //    departments.push(o[i][0]);
-  //  }
-  //}
- 
-//  var diagnoses = [];
-//  for (i = 0; i < o.length; i++) {
-//    var d = o[i][1].replace(/"/g, '') ;
-//    if ((o[i][2] > 100) && (diagnoses.indexOf(d) == -1)) {
-//      diagnoses.push(d);
-//    }
-//  }
-

@@ -22,7 +22,7 @@
     "default": { "value": "30148,30348,30401,70248,70348,70448,70548,70648" }
   },
   "filter": { 
-    "label" : "filter",
+    "label" : "filter diagnoses",
     "options":[
       [ 1, "common" ],
       [ 2, "occasional" ],

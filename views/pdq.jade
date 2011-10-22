@@ -20,17 +20,20 @@ script
       s = !{JSON.stringify(config.size.options)} ;
     
     for (var i = 0; i < f.length; i++) {
-      var li = '<br/><a id="filter_' + f[i][0] + '" class="filter" href=#chart>' + f[i][1] + '</a>'
+      var bg = (i == 0 ? 'style="background: #F3F781" ' : '');
+      var li = '<br/><a id="filter_' + f[i][0] + '" class="filter" ' + bg  + 'href=#chart>' + f[i][1] + '</a>'
       $('#filter').append(li);
     }
 
     for (var j = 0; j < c.length; j++) {
-      var li = '<br/><a id="category_' + c[j][0] + '" class="category" href=#chart>' + c[j][1] + '</a>'
+      var bg = (j == 0 ? 'style="background: #F3F781" ' : '');
+      var li = '<br/><a id="category_' + c[j][0] + '" class="category" ' + bg  + 'href=#chart>' + c[j][1] + '</a>'
       $('#category').append(li);
     }
 
     for (var k = 0; k < s.length; k++) {
-      var li = '<br/><a id="size_' + s[k][0] + '" class="size" href=#chart>' + s[k][1] + '</a>'
+      var bg = (k == 0 ? 'style="background: #F3F781" ' : '');
+      var li = '<br/><a id="size_' + s[k][0] + '" class="size" ' + bg  + 'href=#chart>' + s[k][1] + '</a>'
       $('#size').append(li);
     }
 
@@ -48,3 +51,11 @@ body(style="font-size:62.5%;")
         h3#size size
 
 div#chart
+
+table#cats(width="100%")
+  tr(valign="top")
+    td(width="30%", align="left") 
+      h3#pri 
+    td(width="30%", align="right") 
+      h3#sec 
+  
