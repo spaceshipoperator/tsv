@@ -1,9 +1,15 @@
 {
   "name": "UCC Diagnosis Visit Summary",
   "asOfDate":{
-    "label": "as of date: ",
+    "label": "from date: ",
     "isModifiable": true,
     "default": { "value": "2011-01-01" },
+    "minimum": { "value": "2010-01-01" }
+  },
+  "untilDate":{
+    "label": "until date: ",
+    "isModifiable": true,
+    "default": { "function": "yesterdayStr()" },
     "minimum": { "value": "2010-01-01" }
   },
   "series":{
@@ -49,5 +55,5 @@
     ],
     "default": { "value": "1" }
   },
-  "cmd": "exec edw.UCC.DiagnosisVisitSummary ~asOfDate, ~series;"
+  "cmd": "exec edw.UCC.DiagnosisVisitSummary ~asOfDate, ~series, ~untilDate;"
 }

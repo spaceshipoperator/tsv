@@ -99,7 +99,7 @@ function getConfig(vtype, vname, selectedOptions, next) {
   fs.readFile("./config/" + vname + "." + vtype + ".json", function(err,buffer) {
     var c = JSON.parse(buffer),
       // create this array based on those that have "default" eh?
-      b = ['asOfDate','series'];
+      b = ['asOfDate','untilDate','series'];
 
     for (var i in b) {
       var k = b[i],
