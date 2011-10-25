@@ -6,6 +6,12 @@
     "default": { "function": "yesterdayStr()" },
     "minimum": { "value": "2010-01-01" }
   },
+  "untilDate":{
+    "label": "until date: ",
+    "isModifiable": true,
+    "default": { "function": "yesterdayStr()" },
+    "minimum": { "value": "2010-01-01" }
+  },
   "series":{
     "label": "departments: ",
     "multiple" : true,
